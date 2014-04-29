@@ -7,8 +7,6 @@ require File.expand_path(File.join(File.dirname(__FILE__), "list_tests"))
 require File.expand_path(File.join(File.dirname(__FILE__), "rb_tree_tests"))
 require File.expand_path(File.join(File.dirname(__FILE__), "points_tests"))
 require File.expand_path(File.join(File.dirname(__FILE__), "half_edge_tests"))
-require File.expand_path(File.join(File.dirname(__FILE__), "make_monotone_test"))
-
 
 #
 # Reabre el modulo de Test para agregar los metodos que corren las pruebas
@@ -45,7 +43,7 @@ module Test
   def self.run
     puts "Corriendo Tests:\n\n"
     @@test_number = 0
-    total_tests = 18
+    total_tests = 17
     
     assert("2d_points.h: create_copy_point",TestPoints.create_copy_point)
     puts ""
@@ -53,17 +51,24 @@ module Test
     assert("half_edge.h: copy_half_edge", TestHalfEdge.copy_half_edge)
     puts ""
     
-    assert("double_linked_list.h: pop de una lista vacia", TestList.pop_empty_list)
-    assert("double_linked_list.h: Mas push, menos pop", TestList.more_push)
-    assert("double_linked_list.h: Menos push, mas pop", TestList.more_pop)
-    assert("double_linked_list.h: pick de una lista vacia", TestList.pick_empty_list)
-    assert("double_linked_list.h: pick en una lista no vacia", TestList.pick)
+    assert("double_linked_list.h: pop de una lista vacia", 
+           TestList.pop_empty_list)
+    assert("double_linked_list.h: Mas push, menos pop", 
+           TestList.more_push)
+    assert("double_linked_list.h: Menos push, mas pop", 
+           TestList.more_pop)
+    assert("double_linked_list.h: pick de una lista vacia", 
+           TestList.pick_empty_list)
+    assert("double_linked_list.h: pick en una lista no vacia", 
+           TestList.pick)
     puts ""
 
     assert("rb_tree.h: rb_min en un arbol vacio", TestRBTree.min_on_empty_tree)
     assert("rb_tree.h: rb_max en un arbol vacio", TestRBTree.max_on_empty_tree)
-    assert("rb_tree.h: rb_search en un arbol vacio", TestRBTree.search_on_empty_tree)
-    assert("rb_tree.h: rb_delete en un arbol vacio", TestRBTree.delete_on_empty_tree)
+    assert("rb_tree.h: rb_search en un arbol vacio", 
+           TestRBTree.search_on_empty_tree)
+    assert("rb_tree.h: rb_delete en un arbol vacio", 
+           TestRBTree.delete_on_empty_tree)
     
     assert("rb_tree.h: rb_min", TestRBTree.rb_min)
     assert("rb_tree.h: rb_max", TestRBTree.rb_max)
@@ -75,8 +80,6 @@ module Test
     assert("rb_tree.h: rb_insert y rb_delete de" + 
            " numberos repetidos", TestRBTree.insert_delete_repeat_numbers)
     puts ""
-    
-    assert("make_monotone(): Verifica que tu algoritmo hace poligonos monotonos", TestMonotone.make_monotone)
     
     puts "\nTests aprobados: #{@@test_number}"
     puts "Tests fallidos: #{total_tests - @@test_number}"

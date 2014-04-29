@@ -9,16 +9,19 @@
 #
 #    compile: Compila para su uso con ruby-processing
 #    compile_c: Compila para poder usar y probar tus funciones en ./main
-#    test: Ejecuta las pruebas(si no esta compilado, seguramente truena esta accion)
+#    test: Ejecuta las pruebas(si no esta compilado, seguramente truena 
+#          esta accion)
 #    clean: Borra todos los archivos que se generaron en la instalación
 
 # Variables generales para compile y compile_c
 # Compilador que se usa
 @cc = "gcc"
 
-# Aqui debes agregar los demás objectos que programes ejemplo : [ ..., "algorithms/heap.o"  ,...]
-@objs = ["double_linked_list/double_linked_list.o","points/2d_points.o","half_edge/half_edge.o", "face/face.o"] +
-  ["red_black_tree/rb_tree.o","dcel/dcel.o", "example.o", "algorithms/make_monotone.o"]
+# Aqui debes agregar los demás objectos que programes ejemplo : 
+# [ ..., "algorithms/heap.o"  ,...]
+@objs = ["double_linked_list/double_linked_list.o","points/2d_points.o"] + 
+  ["half_edge/half_edge.o", "face/face.o", "red_black_tree/rb_tree.o"] + 
+  ["dcel/dcel.o", "algorithms/algorithms.o"]
 
 @cflags = "-I."
 @debug = "-g"
@@ -63,13 +66,14 @@ def compile_c
     puts "\t"+ command
     exit (0) if not((system(command)))
   end
-  command = "#{@cc} #{@debug} -o #{@main[0..-3]} #{objs.join(" ")} #{@cflags}"
+  command = "#{@cc} #{@debug} -o #{@main[0..-3]} #{objs.join(" ")}" +
+    " #{@cflags}"
   puts "\t"+ command
   puts "No compilo de forma correcta" if not(system(command))
 end	
 
-# Compila el codigo de tal forma que se puedan usar las librerias en Ruby-Processing y
-# los tests
+# Compila el codigo de tal forma que se puedan usar las librerias en 
+# Ruby-Processing y los tests
 def compile
   puts "Compilando archivos fuentes:"
   @objs.each do |obj|

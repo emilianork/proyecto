@@ -28,14 +28,3 @@ module DCEL
   attach_function :incident_f_to_f, [Face::Face.by_ref], List::List.by_ref
   attach_function :incident_he_to_f, [Face::Face.by_ref], List::List.by_ref
 end
-
-#
-# Modulo para mapear la funcion que crea el ejemplo de C a Ruby.
-#
-module ExampleDCEL
-  extend FFI::Library
-  
-  ffi_lib "lib/libexample.so"
-  
-  attach_function :construct_example, [], DCEL::DCEL.by_ref
-end
