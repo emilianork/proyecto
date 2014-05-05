@@ -4,6 +4,7 @@
  */
 
 #include "half_edge/half_edge.h"
+#include "types/types.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -17,6 +18,10 @@ half_edge* init_half_edge(vertex* first, vertex* last, const char* name)
 	if (edge == NULL) {
 		printf("Ya no hay memoria disponible: init_half_edge()\n");
 		exit(EXIT_FAILURE);
+	}
+
+	if (first->x == last->x) {
+		first->x = first->x + EPSILON;
 	}
 	
 	first->incident_edge = edge;

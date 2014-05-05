@@ -40,6 +40,18 @@ struct point {
 	 */
 	void* half_edge;
 	void* intersection;
+
+	/**
+	 * El punto generador de una celda en el diagrama de voronoi tiene 
+	 * una cara asociada. Si no es punto generador esta cara es nula;
+	 */
+	void* face;
+
+	/**
+	 * Si todavia no termino de procesar el punto, entonces se debe de dibujar
+	 * con un color distinto hasta que se termine de procesar.
+	 */
+	int distinct_color;
 };
 
 /**
@@ -71,10 +83,14 @@ vertex* create_copy_point(vertex* point);
  */
 int curve_orientation(vertex* a, vertex* b, vertex* c);
 
-/** Funciones de comparacion de las puntos, sirve para el arbol rojo negro. */
+/** Funciones de comparacion lexicografico, sirve para el arbol rojo negro. */
 int point_greater_than(vertex *a, vertex* b);
 int point_less_than(vertex* a, vertex* b);
 int point_equals(vertex* a, vertex* b);
+
+/** Funciones de orden con respecto al eje X. */
+int point_less_than_x(vertex* a, vertex* b);
+int point_equals_x(vertex* a, vertex* b);
 
 /** Funcion que hace un casting del punto, sirve para los tests. */
 vertex* cast_point(void* a);

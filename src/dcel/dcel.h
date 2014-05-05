@@ -17,6 +17,8 @@
 #include "half_edge/half_edge.h"
 #include "points/2d_points.h"
 
+#define STR_LENGTH 7
+
 /**
  * Estructura DCEL, para guardar las caras, vertices y aristas
  */
@@ -81,5 +83,9 @@ list* incident_f_to_f(face* face);
  * la cara dada, recuerda que debes iterar la lista inner_components.
  */
 list* incident_he_to_f(face* face);
+
+int contain_vertex(face* face, vertex* vertex);
+
+void rand_str(char *dest, int length);
 
 #endif

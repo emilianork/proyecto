@@ -40,6 +40,8 @@ face* init_face(const char* name, half_edge* outer_component,
 		
 	}
 	
+	face->center = NULL;
+
 	return face;
 }
 

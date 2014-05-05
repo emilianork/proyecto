@@ -4,11 +4,12 @@
  */
 
 #include "dcel/dcel.h"
-
 #include "double_linked_list/double_linked_list.h"
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 
 dcel* init_dcel()
 {
@@ -88,7 +89,45 @@ list* incident_he_to_v(vertex* vertex)
 
 list* incident_f_to_f(face* face) 
 {
-	return NULL;
+	rb_tree* incident_faces;
+	incident_faces = init_rb_tree(FACE);
+
+	if (face->outer_component != NULL) {
+		
+		half_edge* init_half_edge = face->outer_component;
+		half_edge* tmp;
+		
+		rb_insert(incident_faces, init_half_edge->twin->incident_face);
+		
+		for(tmp = init_half_edge->next; tmp != init_half_edge; tmp = tmp->next) 
+			if (rb_search(incident_faces, tmp->twin->incident_face) == NULL)
+				rb_insert(incident_faces,tmp->twin->incident_face);
+		
+	}
+	
+	if (face->inner_components != NULL) {
+		item* tmp1 = ((list*)face->inner_components)->head;
+		half_edge *init_half_edge, *tmp2;
+		
+		
+		for (;tmp1 != NULL; tmp1 = tmp1->right) {
+			
+			init_half_edge = tmp1->element;
+			
+			rb_insert(incident_faces, init_half_edge->twin->incident_face) ;
+			
+			for (tmp2 = init_half_edge->next; tmp2 != init_half_edge;
+				 tmp2 = tmp2->next) {
+				
+				if (rb_search(incident_faces, tmp2->twin->incident_face) == NULL)
+					rb_insert(incident_faces, tmp2->twin->incident_face);
+				
+			}
+			
+		}
+	}
+	
+	return rb_tree_to_list(incident_faces);
 }
 
 list* incident_he_to_f(face* face)
@@ -129,4 +168,58 @@ list* incident_he_to_f(face* face)
 
 	return list;
 
+}
+
+int contain_vertex(face* face, vertex* vertex)
+{
+	list* incident_he = incident_he_to_f(face);
+	
+	/** Primero obtengo la dirección de la cara. */
+	half_edge* tmp_he = incident_he->head->element;
+
+	/** Direccion del interior de la cara para cada arista. */
+	int direction;
+	if (tmp_he->first->x == tmp_he->last->x) {
+		if (tmp_he->first->y < tmp_he->last->y)
+			direction = LEFT;
+		else
+			direction = RIGHT;
+	} else {
+		if (tmp_he->first->x < tmp_he->last->x)
+			direction = LEFT;
+		else
+			direction = RIGHT;
+	}
+   
+
+	item *tmp;
+
+	for (tmp = incident_he->head; tmp != NULL; tmp = tmp->right) {
+		
+		tmp_he = tmp->element;
+		/** 
+		 * Si la vuelta no es hacia donde deberia, entonces la cara no
+		 * contiene al vertice
+		 */
+		if (curve_orientation(tmp_he->first, tmp_he->last, vertex) != direction) {
+			//return FALSE;
+		}
+
+	}
+	
+	return TRUE;
+}
+
+void rand_str(char *dest, int length)
+{
+    char charset[] = "0123456789"
+                     "abcdefghijklmnopqrstuvwxyz"
+                     "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+    while (length-- > 0) {
+		rand();
+        int index = (double) rand() / RAND_MAX * (sizeof charset - 1);
+        *dest++ = charset[index];
+    }
+    *dest = '\0';
 }

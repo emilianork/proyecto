@@ -54,6 +54,8 @@ struct double_linked_list {
 typedef struct list_item item;
 typedef struct double_linked_list list;
 
+extern struct rb_node sentinel;
+
 /** Inicializa una lista con sus apuntadores nulos. */
 list* init_double_linked_list(item_type);
 

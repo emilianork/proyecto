@@ -5,6 +5,7 @@
 
 
 #include "points/2d_points.h"
+#include "types/types.h"
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -21,8 +22,8 @@ vertex* init_point_empty()
 	point->x = 0.0;
 	point->y = 0.0;
 
-	point->half_edge = point->intersection = NULL;
-
+	point->half_edge = point->intersection = point->face = NULL;
+	point->distinct_color = FALSE;
 	return point;
 }
 
@@ -41,7 +42,9 @@ vertex* init_point(double x, double y, const char* name)
 	point->name = name;
 
 	point->incident_edge = point->half_edge = point->intersection = NULL;
-
+	point->face = NULL;
+	point->distinct_color = FALSE;
+	
 	return point;
 }
 
@@ -52,6 +55,9 @@ vertex* create_copy_point(vertex* point)
 	new_point->incident_edge = point->incident_edge;
 	new_point->half_edge = point->half_edge;
 	new_point->intersection = point->intersection;
+
+	new_point->face = point->face;
+	new_point->distinct_color = point->distinct_color;
 	
 	return new_point;
 }
@@ -65,6 +71,7 @@ void destroy_point(vertex* point)
 int curve_orientation(vertex* a, vertex* b, vertex* c)
 {
 	int det_o = (b->x - a->x)*(c->y - a->y) - (c->x - a->x)*(b->y - a->y);
+
 	if (det_o < 0) {
 		return RIGHT;
 	} else if (det_o > 0) {
@@ -97,6 +104,17 @@ int point_less_than(vertex* a, vertex* b)
 int point_equals(vertex* a, vertex* b)
 {	
 	return ((a->x == b->x) && (a->y == b->y));
+}
+
+/** Funciones de orden con respecto al eje X. */
+int point_less_than_x(vertex* a, vertex* b)
+{
+	return a->x < b->x;
+}
+
+int point_equals_x(vertex* a, vertex* b)
+{
+	return a->x == b->x;
 }
 
 vertex* cast_point(void* a)

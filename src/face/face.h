@@ -29,10 +29,15 @@ struct face {
 	struct half_edge* outer_component;
 
 	/**
-	   inner_compontens es una lista de half_edges que pertenecen a diferentes
-	   recubrimiento intenteriores, si no tiene nada, entonces es nulo.
+	 * inner_compontens es una lista de half_edges que pertenecen a diferentes
+	 * recubrimiento intenteriores, si no tiene nada, entonces es nulo.
 	 */
 	void* inner_components;
+	
+	/**
+	 * center es el punto que genera a la cara en el diagrama de voronoi.
+	 */
+	vertex* center;
 };
 
 /** Renombramos la estructura anterior para un uso mas sencillo. */

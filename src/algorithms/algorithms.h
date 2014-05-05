@@ -6,11 +6,35 @@
  * la triangulación de Delauney.
  */
 
-#ifndef MAKE_MONOTONE_H_
-#define MAKE_MONOTONE_H_
+#ifndef ALGORITHMS_H_
+#define ALGORITHMS_H_
 
-#include "dcel/dcel.h"
+#include "voronoi/voronoi.h"
 
-void rand_str(char *dest, int length);
+struct upgrade_data {
+	
+	vertex* center;
+	
+	half_edge* a;
+	vertex* intersection_a;
+	
+	half_edge* b;
+	vertex* intersection_b;
+	
+	voronoi* voronoi;
+	
+	int intersection_repeat;
+};
+
+typedef struct upgrade_data up_data;
+
+up_data* init_upgrade_data(void);
+void destroy_upgrade_data(up_data* data);
+
+int steps_voronoi(voronoi* voronoi);
+
+void voronoi_incremental(voronoi* voronoi, vertex* vertex);
+
+void add_half_edge_voronoi(up_data* data);
 
 #endif

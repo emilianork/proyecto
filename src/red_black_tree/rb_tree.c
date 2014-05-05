@@ -203,6 +203,10 @@ int rb_equals(item_type type, void* a, void* b)
 	case POINT:
 		return point_equals((struct point*) a, (struct point*) b);
 		break;
+		
+	case X:
+		return point_equals_x((struct point*) a, (struct point*) b);
+		break;
 	}
 
 	return FALSE;
@@ -224,13 +228,16 @@ int rb_less_than(item_type type, void* a, void* b)
 		return point_less_than((vertex*) a,(vertex*) b);
 		break;
 
+	case X:
+		return point_less_than_x((struct point*) a, (struct point*) b);
+		break;
 	}
 	
 	return FALSE;
 }
 
 /**
- * Busca un un nodo en el arbol que contenga exactamente el punto que se le paso.
+ * Busca un nodo en el arbol que contenga exactamente el punto que se le paso.
  **/
 rb_node* rb_node_search(rb_tree* tree, void* element)
 {
@@ -375,27 +382,6 @@ struct rb_node* rb_max_node(struct rb_tree* tree,struct rb_node* node)
 	return tmp;
 }
 
-/**
- * Destruye un elemento dentro del arbol.
- */
-void destroy_element(item_type type, void* element)
-{
-	switch (type) {
-	
-	case POINT:
-		destroy_point((vertex*)element);
-		break;
-		
-	case HALF_EDGE:
-		destroy_half_edge((half_edge*) element);
-		break;
-		
-	case FACE:
-		destroy_face((face*) element);
-		break;
-	}
-}
-
 int is_left_son(rb_tree* tree, rb_node* node) 
 {
 	if (node->parent == &sentinel) {
@@ -433,19 +419,6 @@ void destroy_rb_tree(struct rb_tree* tree)
 	while (!empty_rb_tree(tree))
 		rb_delete(tree,rb_min(tree));
 	
-	free(tree);
-}
-
-void destroy_rb_tree_with_elements(rb_tree* tree)
-{
-	if (tree == NULL)
-		return;
-
-	while(!empty_rb_tree(tree)) {
-		destroy_element(tree->type,rb_delete(tree,rb_min(tree)));
-		
-	}
-
 	free(tree);
 }
 

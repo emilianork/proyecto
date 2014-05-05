@@ -16,7 +16,8 @@ module List
 
   Item_type = enum(:point, 1,
                    :half_edge,
-                   :face)
+                   :face,
+                   :x)
 
   class List < FFI::Struct
     layout :head, :pointer,

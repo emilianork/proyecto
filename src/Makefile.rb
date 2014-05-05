@@ -20,8 +20,9 @@
 # Aqui debes agregar los demás objectos que programes ejemplo : 
 # [ ..., "algorithms/heap.o"  ,...]
 @objs = ["double_linked_list/double_linked_list.o","points/2d_points.o"] + 
-  ["half_edge/half_edge.o", "face/face.o", "red_black_tree/rb_tree.o"] + 
-  ["dcel/dcel.o", "algorithms/algorithms.o"]
+  ["half_edge/half_edge.o","equations/equations.o" ,"face/face.o"] + 
+  ["red_black_tree/rb_tree.o", "dcel/dcel.o","voronoi/voronoi.o"] + 
+  [ "algorithms/algorithms.o"]
 
 @cflags = "-I."
 @debug = "-g"

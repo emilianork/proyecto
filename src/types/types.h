@@ -13,10 +13,12 @@
 #define FALSE 0
 #define TRUE 1
 
+#define EPSILON 0.00000011920928955078
+
 /**
  * Tipos que nos ayudan a identificar que contiene un arbol rojo negro o
  * una lista doblemente ligada.
  */
-typedef enum {POINT = 1, HALF_EDGE, FACE} item_type;
+typedef enum {POINT = 1, HALF_EDGE, FACE, X} item_type;
 
 #endif

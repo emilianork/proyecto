@@ -16,7 +16,8 @@ module Face
   class Face < FFI::Struct
     layout :name, :string,
            :outer_componenet, HalfEdge::HalfEdge.by_ref,
-           :inner_component, :pointer
+           :inner_component, :pointer,
+           :center, Points::Point.by_ref
     
   end
   

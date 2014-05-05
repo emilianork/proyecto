@@ -17,7 +17,9 @@ module Points
            :incident_edge, :pointer,
            :name, :string,
            :half_edge, :pointer,
-           :intersection, :pointer
+           :intersection, :pointer,
+           :face, :pointer,
+           :distinct_color, :int
   end
   
   attach_function :init_point_empty, [], Point.by_ref

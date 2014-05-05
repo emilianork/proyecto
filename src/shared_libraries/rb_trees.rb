@@ -16,7 +16,8 @@ module RBTree
 
   Item_type = enum( :point, 1,
                     :half_edge,
-                    :face)
+                    :face,
+                    :x)
 
   class Tree < FFI::Struct
     layout :root, :pointer,
