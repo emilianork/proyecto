@@ -18,6 +18,8 @@ voronoi* init_voronoi_diagram(double width, double height)
 	
 	voronoi->seeds = init_double_linked_list(POINT);
 
+	voronoi->degenerate_case = FALSE;
+
 	return voronoi;
 }
 

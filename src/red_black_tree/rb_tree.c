@@ -352,7 +352,7 @@ struct rb_node* rb_min_node(struct rb_tree* tree,struct rb_node* node)
 	struct rb_node* tmp = node;
 
 	if (tmp == NULL)
-		return NULL;
+		return &sentinel;
 
 	if (tmp == &sentinel)
 		return tmp;
@@ -371,7 +371,7 @@ struct rb_node* rb_max_node(struct rb_tree* tree,struct rb_node* node)
 	struct rb_node* tmp = node;
 	
 	if (tmp == NULL)
-		return NULL;
+		return &sentinel;
 
 	if (tmp == &sentinel)
 		return tmp;
@@ -382,8 +382,13 @@ struct rb_node* rb_max_node(struct rb_tree* tree,struct rb_node* node)
 	return tmp;
 }
 
-int is_left_son(rb_tree* tree, rb_node* node) 
+int is_left_son(rb_node* node) 
 {
+	
+	if (node == &sentinel) {
+		return TRUE;
+	}
+
 	if (node->parent == &sentinel) {
 		return TRUE;
 	}
@@ -426,15 +431,18 @@ struct rb_node* init_rb_node(){
 	struct rb_node* node;
 	node = (struct rb_node*) malloc(sizeof(struct rb_node));
 	
-      	if (node == NULL) {
+	if (node == NULL) {
 		printf("Ya no hay memoria disponible: init_rb_node()\n");
 		exit(EXIT_FAILURE);
 	}
-
-	node->left = node->right = node->parent = &sentinel;
+	
+	node->left = &sentinel;
+	node->right = &sentinel;
+	node->parent = &sentinel;
 	node->color = RED;
 	
-	node->prev = node->next = &sentinel;
+	node->prev = &sentinel;
+	node->next = &sentinel;
 
 	node->element = NULL;
 
@@ -486,8 +494,9 @@ void rb_insert(struct rb_tree* tree, void* element)
 	}
 
 	if (rb_less_than(tree->type,node->element, tree->min->element)) {
-		node->next = tree->min;
+		
 		tree->min->prev = node;
+		node->next = tree->min;
 
 		tree->min = node;
 				
@@ -513,20 +522,20 @@ void rb_insert(struct rb_tree* tree, void* element)
 		
 		suc = pre->next;
 
-		pre->next = node;
-		node->prev = pre;
 	} else {
 		pre = node;
-		while (is_left_son(tree,pre)) {
-			pre = pre->parent;
-		}
-		pre = pre->parent;
 
+		while (is_left_son(pre))			
+			pre = pre->parent;
+
+		pre = pre->parent;
 		suc = pre->next;
 
-		pre->next = node;
-		node->prev = pre;
+		
 	}
+
+	pre->next = node;
+	node->prev = pre;
 
 	suc->prev = node;
 	node->next = suc;

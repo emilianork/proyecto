@@ -19,9 +19,9 @@ module DCEL
   ffi_lib "lib/libdcel.so"
   
   class DCEL < FFI::Struct
-    layout :face, RBTree::Tree.by_ref,
-           :vertex, RBTree::Tree.by_ref,
-           :half_edge, RBTree::Tree.by_ref 
+    layout :face, List::List.by_ref,
+           :vertex, List::List.by_ref,
+           :half_edge, List::List.by_ref 
   end
   
   attach_function :incident_he_to_v, [Points::Point.by_ref], List::List.by_ref

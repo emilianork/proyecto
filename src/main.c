@@ -19,9 +19,9 @@ int main(void)
 
 	voronoi *voronoi = init_voronoi_diagram(400.0,400.0);
 
-	vertex* A = init_point(100.0,100.0,"\0");
-	vertex* B = init_point(300.0,300.0,"\0");
-	vertex* C = init_point(200.0,1,"\0");
+	vertex* A = init_point(26.0,96.0,"\0");
+	vertex* B = init_point(347.0,234.0,"\0");
+	vertex* C = init_point(136.0,362.0,"\0");
 
 	voronoi_incremental(voronoi, A);
 
@@ -35,12 +35,14 @@ int main(void)
 		voronoi_incremental(voronoi, NULL);
 	}
 
-	voronoi_incremental(voronoi, C);	
+    voronoi_incremental(voronoi, C);	
 
 	while(steps_voronoi(voronoi)) {
 		voronoi_incremental(voronoi, NULL);
+	
 	}
 
+	
 	return EXIT_SUCCESS;
 }
 

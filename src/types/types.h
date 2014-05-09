@@ -15,6 +15,8 @@
 
 #define EPSILON 0.00000011920928955078
 
+#define CONST 15
+
 /**
  * Tipos que nos ayudan a identificar que contiene un arbol rojo negro o
  * una lista doblemente ligada.

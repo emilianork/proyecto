@@ -14,19 +14,31 @@ def setup
   size(400, 400,P3D)
 
   # Genera un conjunto random de puntos dentro de la caja.
-  @points = [[100.0,100.0], [300.0,300.0], [201.0,10.0]].map {|x| Points.init_point(x[0], x[1], "")}
+
+  rand_size = 7
+  random_vertex = []
+
+  rand_size.times.each do
+    random_vertex << [rand(width).to_f, rand(height).to_f]
+  end
+  
+  #p random_vertex
+
+  @points = [[26.0, 96.0], [347.0, 234.0], [136.0, 362.0]].map {|x| Points.init_point(x[0], x[1], "")}
   
   @index = 0
   
   @voronoi = Voronoi.init_voronoi_diagram(width,height)
   
   @up = false
+ 
 end
 
 def draw
   if key_pressed?
     if @up
       next_step
+      translate(0, height)
       draw_vertex_and_half_edges
       @up = false
     else
@@ -42,7 +54,7 @@ def draw_vertex_and_half_edges
 
   background 255, 255, 255
 
-  c_half_edges = RBTree.rb_tree_to_list(@voronoi[:diagram][:half_edge])
+  c_half_edges = List.create_copy_list(@voronoi[:diagram][:half_edge])
 
   half_edge = []
 
@@ -57,20 +69,24 @@ def draw_vertex_and_half_edges
     
     half_edge << ruby_edge
   end
-  
+
+  puts "Ruby Aristas"
+
   half_edge.each do
     |half_edge|
     a = half_edge[0]
     b = half_edge[1]
-    line(a[0],a[1],b[0],b[1])
+
+    puts "#{a}  #{b}"
+
+    line(a[0].abs,-a[1].abs,b[0].abs,-b[1].abs)
   end
-  c_seeds = @voronoi[:seeds]
+  c_seeds = List.create_copy_list(@voronoi[:seeds])
   
   array_seeds = []
 
   c_seeds[:size].times.each do
     array_seeds << List.pop_front(c_seeds)
-    List.push_back(c_seeds,array_seeds.last)
   end
 
   array_seeds.each do
@@ -85,7 +101,7 @@ def draw_vertex_and_half_edges
     else
       fill(0,0,0)
     end
-    ellipse(vertex[0], vertex[1], 5.0,5.0)
+    ellipse(vertex[0], -vertex[1], 5.0,5.0)
   end
 end
 
@@ -93,6 +109,7 @@ end
 #         a aristas en Ruby
 
 def next_step
+  
   if (Algorithms.steps_voronoi(@voronoi) == 0)
     Algorithms.voronoi_incremental(@voronoi,@points[@index])
     @index += 1

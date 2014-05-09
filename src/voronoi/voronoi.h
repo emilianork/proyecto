@@ -16,6 +16,7 @@ struct voronoi_diagram {
 	struct dcel* diagram;
 	struct double_linked_list* processing;
 	struct double_linked_list* seeds;
+	int degenerate_case;
 };
 
 typedef struct voronoi_diagram voronoi;

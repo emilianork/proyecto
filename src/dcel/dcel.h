@@ -27,9 +27,9 @@ struct dcel {
 	 * Registro de las caras, vertices y aristas guardadas en arboles 
 	 * rojo negros 
 	*/
-	rb_tree* face;
-	rb_tree* vertex;
-	rb_tree* half_edge;
+	list* face;
+	list* vertex;
+	list* half_edge;
 };
 
 /** Renombramos la DCEL para usarla de forma más sencilla. */
@@ -62,6 +62,24 @@ void dcel_insert_half_edge(dcel* dcel, half_edge* half_edge);
  */
 void dcel_insert_vertex(dcel* dcel, vertex* vertex);
 
+/**
+ * Borra un vertice de la DCEL, esta funcion maneja por dentro los arboles rojo
+ * negro.
+ */
+void dcel_pop_vertex(dcel* dcel, vertex* vertex);
+
+/**
+ * Borra una arista de la DCEL, esta funcion maneja por dentro los arboles rojo
+ * negro.
+ */
+void dcel_pop_half_edge(dcel* dcel,half_edge* half_edge);
+
+/**
+ * Borra una cara de la DCEL, esta funcion maneja por dentro los arboles rojo
+ * negro.
+ */
+void dcel_pop_face(dcel* dcel, face* face);
+
 
 /**
  * Funciones que debes de implementar.
@@ -85,6 +103,8 @@ list* incident_f_to_f(face* face);
 list* incident_he_to_f(face* face);
 
 int contain_vertex(face* face, vertex* vertex);
+
+vertex* search_vertex(dcel* dcel, vertex* vertex);
 
 void rand_str(char *dest, int length);
 

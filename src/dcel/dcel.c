@@ -30,9 +30,9 @@ dcel* init_dcel()
 
 void destroy_dcel(dcel* dcel)
 {
-	destroy_rb_tree(dcel->face);
-	destroy_rb_tree(dcel->vertex);
-	destroy_rb_tree(dcel->half_edge);
+	destroy_double_linked_list(dcel->face);
+	destroy_double_linked_list(dcel->vertex);
+	destroy_double_linked_list(dcel->half_edge);
 
 	free(dcel);
 }
@@ -43,14 +43,9 @@ void dcel_insert_face(dcel* dcel, face* face)
 		return;
 
 	if (dcel->face == NULL)
-		dcel->face = init_rb_tree(FACE);
+		dcel->face = init_double_linked_list(FACE);
 
-	if (rb_search(dcel->face,face) != NULL) {
-		printf("dcel_insert_face(): Se repitio una cara\n");
-		exit(EXIT_FAILURE);
-	}
-	
-	rb_insert(dcel->face, face);
+	push_back(dcel->face, face);
 }
 
 void dcel_insert_half_edge(dcel* dcel, half_edge* half_edge)
@@ -59,13 +54,10 @@ void dcel_insert_half_edge(dcel* dcel, half_edge* half_edge)
 		return;
 
 	if (dcel->half_edge == NULL) {
-		dcel->half_edge = init_rb_tree(HALF_EDGE);
+		dcel->half_edge = init_double_linked_list(HALF_EDGE);
 	}
 
-	if (rb_search(dcel->half_edge,half_edge) != NULL)
-		return;
-
-	rb_insert(dcel->half_edge, half_edge);
+	push_back(dcel->half_edge, half_edge);
 }
 
 void dcel_insert_vertex(dcel* dcel, vertex* vertex)
@@ -74,60 +66,202 @@ void dcel_insert_vertex(dcel* dcel, vertex* vertex)
 		return;
 
 	if (dcel->vertex == NULL)
-		dcel->vertex = init_rb_tree(POINT);
+		dcel->vertex = init_double_linked_list(POINT);
 	
-	if (rb_search(dcel->vertex,vertex) != NULL)
+	push_back(dcel->vertex,vertex);
+}
+
+void dcel_pop_vertex(dcel* dcel, vertex* vertex)
+{
+	if (dcel == NULL || vertex == NULL)
 		return;
 
-	rb_insert(dcel->vertex,vertex);
+	if (dcel->vertex == NULL)
+		return;
+
+	item* tmp;
+	for(tmp = dcel->vertex->head; tmp != NULL; tmp = tmp->right) {
+		if (vertex == tmp->element) {
+			/** Si borro el unico elmento. */
+			if (dcel->vertex->size == 1) {
+				dcel->vertex->head = NULL;
+				dcel->vertex->tail = NULL;
+				dcel->vertex->size = 0;
+
+				return;
+			}
+
+			/** Si borro la cabeza*/
+			if (tmp == dcel->vertex->head) {
+
+				dcel->vertex->head = tmp->right;				
+				dcel->vertex->head->left = NULL;
+
+				dcel->vertex->size -= 1;
+
+				return;
+			}
+				
+			/** Si borro el ultimo element*/
+			if (tmp == dcel->vertex->tail) {
+				
+				dcel->vertex->tail = tmp->left;
+				dcel->vertex->tail->right = NULL;
+
+				dcel->vertex->size -= 1;
+
+				return;
+			}
+
+			tmp->left->right = tmp->right;
+			tmp->right->left = tmp->left;
+
+			dcel->vertex->size -= 1;
+
+			return;
+		}
+	}
+
+	printf("No se encontro el vertice en la DCEL: (%f,%f)\n", vertex->x,
+		   vertex->y);
+	exit(EXIT_FAILURE);
 }
+
+void dcel_pop_half_edge(dcel* dcel,half_edge* half_edge)
+{
+	if (dcel == NULL || half_edge == NULL)
+		return;
+
+	if (dcel->half_edge == NULL)
+		return;
+
+	item* tmp;
+	for(tmp = dcel->half_edge->head; tmp != NULL; tmp = tmp->right) {
+		if (half_edge == tmp->element) {
+			/** Si borro el unico elmento. */
+			if (dcel->half_edge->size == 1) {
+				dcel->half_edge->head = NULL;
+				dcel->half_edge->tail = NULL;
+				dcel->half_edge->size = 0;
+
+				return;
+			}
+
+			/** Si borro la cabeza*/
+			if (tmp == dcel->half_edge->head) {
+
+				dcel->half_edge->head = tmp->right;				
+				dcel->half_edge->head->left = NULL;
+
+				dcel->half_edge->size -= 1;
+
+				return;
+			}
+				
+			/** Si borro el ultimo element*/
+			if (tmp == dcel->half_edge->tail) {
+				
+				dcel->half_edge->tail = tmp->left;
+				dcel->half_edge->tail->right = NULL;
+
+				dcel->half_edge->size -= 1;
+
+				return;
+			}
+
+			tmp->left->right = tmp->right;
+			tmp->right->left = tmp->left;
+
+			dcel->half_edge->size -= 1;
+
+			return;
+		}
+	}
+
+	printf("No se encontro la arista en la DCEL: (%f,%f) (%f,%f) \n", 
+		   half_edge->first->x, half_edge->first->y, half_edge->last->x,
+		   half_edge->last->y);
+	exit(EXIT_FAILURE);
+
+
+}
+
+void dcel_pop_face(dcel* dcel, face* face)
+{
+	if (dcel == NULL || face == NULL)
+		return;
+
+	if (dcel->face == NULL)
+		return;
+
+	item* tmp;
+	for(tmp = dcel->face->head; tmp != NULL; tmp = tmp->right) {
+		if (face == tmp->element) {
+			/** Si borro el unico elmento. */
+			if (dcel->face->size == 1) {
+				dcel->face->head = NULL;
+				dcel->face->tail = NULL;
+				dcel->face->size = 0;
+
+				return;
+			}
+
+			/** Si borro la cabeza*/
+			if (tmp == dcel->face->head) {
+
+				dcel->face->head = tmp->right;				
+				dcel->face->head->left = NULL;
+
+				dcel->face->size -= 1;
+
+				return;
+			}
+				
+			/** Si borro el ultimo element*/
+			if (tmp == dcel->face->tail) {
+				
+				dcel->face->tail = tmp->left;
+				dcel->face->tail->right = NULL;
+
+				dcel->face->size -= 1;
+
+				return;
+			}
+
+			tmp->left->right = tmp->right;
+			tmp->right->left = tmp->left;
+
+			dcel->face->size -= 1;
+
+			return;
+		}
+	}
+
+	printf("No se encontro la cara en la DCEL: %s \n", face->name);
+	exit(EXIT_FAILURE);
+	
+}
+
 
 list* incident_he_to_v(vertex* vertex)
 {	
-	return NULL;
+	list* list = init_double_linked_list(HALF_EDGE);
+
+	push_back(list, vertex->incident_edge);
+
+	half_edge* tmp;
+	tmp = vertex->incident_edge;
+	tmp = tmp->twin->next;
+
+	for(; tmp != list->head->element; tmp = tmp->twin->next)
+		push_back(list,tmp);
+
+	return list;
 }
 
 list* incident_f_to_f(face* face) 
 {
-	rb_tree* incident_faces;
-	incident_faces = init_rb_tree(FACE);
-
-	if (face->outer_component != NULL) {
-		
-		half_edge* init_half_edge = face->outer_component;
-		half_edge* tmp;
-		
-		rb_insert(incident_faces, init_half_edge->twin->incident_face);
-		
-		for(tmp = init_half_edge->next; tmp != init_half_edge; tmp = tmp->next) 
-			if (rb_search(incident_faces, tmp->twin->incident_face) == NULL)
-				rb_insert(incident_faces,tmp->twin->incident_face);
-		
-	}
-	
-	if (face->inner_components != NULL) {
-		item* tmp1 = ((list*)face->inner_components)->head;
-		half_edge *init_half_edge, *tmp2;
-		
-		
-		for (;tmp1 != NULL; tmp1 = tmp1->right) {
-			
-			init_half_edge = tmp1->element;
-			
-			rb_insert(incident_faces, init_half_edge->twin->incident_face) ;
-			
-			for (tmp2 = init_half_edge->next; tmp2 != init_half_edge;
-				 tmp2 = tmp2->next) {
-				
-				if (rb_search(incident_faces, tmp2->twin->incident_face) == NULL)
-					rb_insert(incident_faces, tmp2->twin->incident_face);
-				
-			}
-			
-		}
-	}
-	
-	return rb_tree_to_list(incident_faces);
+	return NULL;
 }
 
 list* incident_he_to_f(face* face)
@@ -141,8 +275,12 @@ list* incident_he_to_f(face* face)
 
 		push_back(list,init_half_edge);
 
-		for (tmp = init_half_edge->next; tmp != init_half_edge; tmp = tmp->next)
+		for (tmp = init_half_edge->next; tmp != init_half_edge; 
+			 tmp = tmp->next) {
+
 			push_back(list, tmp);
+
+		}
 
 	}
 
@@ -173,41 +311,56 @@ list* incident_he_to_f(face* face)
 int contain_vertex(face* face, vertex* vertex)
 {
 	list* incident_he = incident_he_to_f(face);
-	
-	/** Primero obtengo la dirección de la cara. */
-	half_edge* tmp_he = incident_he->head->element;
 
-	/** Direccion del interior de la cara para cada arista. */
-	int direction;
-	if (tmp_he->first->x == tmp_he->last->x) {
-		if (tmp_he->first->y < tmp_he->last->y)
-			direction = LEFT;
-		else
-			direction = RIGHT;
-	} else {
-		if (tmp_he->first->x < tmp_he->last->x)
-			direction = LEFT;
-		else
-			direction = RIGHT;
-	}
-   
+	int direction = LEFT;
 
 	item *tmp;
-
 	for (tmp = incident_he->head; tmp != NULL; tmp = tmp->right) {
 		
-		tmp_he = tmp->element;
-		/** 
-		 * Si la vuelta no es hacia donde deberia, entonces la cara no
-		 * contiene al vertice
-		 */
-		if (curve_orientation(tmp_he->first, tmp_he->last, vertex) != direction) {
-			//return FALSE;
+		half_edge* tmp_he = tmp->element;
+		
+		if (curve_orientation(tmp_he->first, tmp_he->last, vertex) != LEFT) {
+			direction = RIGHT;
+			break;
 		}
 
 	}
+
+	if (direction == LEFT)
+		return TRUE;
+
+	for (tmp = incident_he->head; tmp != NULL; tmp = tmp->right) {
+		
+		half_edge* tmp_he = tmp->element;
+		
+		if (curve_orientation(tmp_he->first, tmp_he->last, vertex) != RIGHT) {
+			direction = LEFT;
+			break;
+		}
+	}
 	
-	return TRUE;
+	if (direction == RIGHT) 
+		return TRUE;
+	
+	return FALSE;
+}
+
+vertex* search_vertex(dcel* dcel, vertex* vertex)
+{
+	if (dcel->vertex == NULL)
+		return NULL;
+
+	item* tmp;
+	struct point* tmp_v;
+	for(tmp = dcel->vertex->head; tmp != NULL; tmp = tmp->right) {
+		
+		tmp_v = tmp->element;
+		
+		if (point_equals(tmp_v, vertex))
+			return tmp_v;
+	}
+
+	return NULL;
 }
 
 void rand_str(char *dest, int length)

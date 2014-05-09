@@ -1,5 +1,7 @@
 #include "equations/equations.h"
 
+#include "types/types.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -19,9 +21,18 @@ line* perpendicular_bisector(vertex* a, vertex* b)
 
 	line* line = (struct line*) malloc(sizeof(struct line));
 
-	line->b = (y2*y2 - y1*y1 + x2*x2 - x1*x1)/(2*(y2-y1));
-	
-	line->m = - (x2-x1)/(y2-y1);
+	if (y2-y1 != 0.0) {
+		
+		line->b = (y2*y2 - y1*y1 + x2*x2 - x1*x1)/(2*(y2-y1));
+		
+		line->m = - (x2-x1)/(y2-y1);
+	} else {
+		
+		double divisor = y2-y1 + EPSILON;
+		
+		line->b = (y2*y2 - y1*y1 + x2*x2 - x1*x1)/ (2*divisor);
+		line->m = - (x2-x1)/divisor;
+	}
 	
 	return line;
 }
@@ -43,13 +54,31 @@ vertex* intersection_segments(line* line, half_edge* half_edge)
 		second_line = (struct line*) malloc(sizeof(struct line));
 		
 		second_line->m = (y2-y1)/(x2-x1);
-		second_line->b = (y1*x2 - x1*y2) / (x2-x1);
 
-		double x = (second_line->b - line->b) / (line->m - second_line->m);
-		double y = (line->m*(second_line->b - line->b) + 
-					line->b*(line->m - second_line->m)) / (line->m - 
-														   second_line->m);
+		if (x2-x1 != 0.0) {
+			second_line->b = (y1*x2 - x1*y2) / (x2-x1);
+		} else {
+			second_line->b = (y1*x2 - x1*y2) / (x2-x1 + EPSILON);
+		}
 
+		
+		double x;
+		double y; 
+		
+		if (line->m - second_line->m != 0.0) {
+			x = (second_line->b - line->b) / (line->m - second_line->m);
+			y = (line->m*(second_line->b - line->b) + 
+				 line->b*(line->m - second_line->m)) / (line->m - 
+														second_line->m);
+		} else {
+			
+			double divisor = line->m - second_line->m + EPSILON;
+			
+			x = (second_line->b - line->b) / divisor;
+			y = (line->m*(second_line->b - line->b) + 
+				 line->b*(line->m - second_line->m)) / divisor;
+		}
+		
 		return init_point(x,y,"\0");
 	}
 		

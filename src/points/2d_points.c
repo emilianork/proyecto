@@ -70,11 +70,27 @@ void destroy_point(vertex* point)
 
 int curve_orientation(vertex* a, vertex* b, vertex* c)
 {
-	int det_o = (b->x - a->x)*(c->y - a->y) - (c->x - a->x)*(b->y - a->y);
+	double det_o = (b->x - a->x)*(c->y - a->y) - (c->x - a->x)*(b->y - a->y);
 
-	if (det_o < 0) {
+	if (det_o) {
+		
+		int count = 1;
+		
+		while (det_o == 0.0) {
+
+			c->x += ((CONST*count)*EPSILON);
+			c->y += ((CONST*count)*EPSILON);
+		
+		det_o = (b->x - a->x)*(c->y - a->y) - (c->x - a->x)*(b->y - a->y);
+
+		count++;
+
+		}
+	}
+
+	if (det_o < 0.0) {
 		return RIGHT;
-	} else if (det_o > 0) {
+	} else if (det_o > 0.0) {
 		return LEFT;
 	} else {
 		printf("Puntos en posicion general: ");
@@ -103,7 +119,12 @@ int point_less_than(vertex* a, vertex* b)
 
 int point_equals(vertex* a, vertex* b)
 {	
-	return ((a->x == b->x) && (a->y == b->y));
+	
+	return ((a->x - (CONST*EPSILON)) <= b->x && 
+			b->x <= (a->x + (CONST*EPSILON)) &&
+			(a->y - (CONST*EPSILON)) <= b->y &&
+			b->y <= (a->y + (CONST*EPSILON)));
+
 }
 
 /** Funciones de orden con respecto al eje X. */

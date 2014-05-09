@@ -40,6 +40,8 @@ module List
   attach_function :pick_back, [List.by_ref], :pointer
   attach_function :pick_front, [List.by_ref], :pointer
 
+  attach_function :create_copy_list, [List.by_ref], List.by_ref
+
   # Public: Convierte una lista de puntos de intersecicon 
   # de C a un arreglo de Ruby.
   # 

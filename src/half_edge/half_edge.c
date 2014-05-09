@@ -118,30 +118,26 @@ half_edge* copy_half_edge(half_edge* half_edge)
 
 int half_edge_greater_than(half_edge* a, half_edge* b)
 {
-	return a->first->x > b->first->x;
+	if (point_greater_than(a->first,b->first))
+		return point_greater_than(a->last,b->last);
+	else
+		return FALSE;
 }
 
 int half_edge_less_than(half_edge* a, half_edge* b)
 {
-	return a->first->x < b->first->x;
+	if (point_less_than(a->first,b->first)) 
+		return point_less_than(a->last,b->last);
+	else 
+		return FALSE;
 }
 
 int half_edge_equals(half_edge* a, half_edge* b)
 {
-	double x1, y1, x2, y2, x3, y3, x4, y4;
-	x1 = a->first->x;
-	y1 = a->first->y;
-
-	x2 = a->last->x;
-	y2 = a->last->y;
-
-	x3 = b->first->x;
-	y3 = b->first->y;
-
-	x4 = b->last->x;
-	y4 = b->last->y;
-
-	return ((x1 == x3) && (y1 == y3) && (x2 == x4) && (y2 == y4));
+	if (point_equals(a->first,b->first))
+		return point_equals(a->last, b->last);
+	else
+		return FALSE;
 }
 
 half_edge* cast_half_edge(void* half_edge)

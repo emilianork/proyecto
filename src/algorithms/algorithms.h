@@ -13,6 +13,8 @@
 
 struct upgrade_data {
 	
+	/**Cambiar nombre a seed_processing*/
+	
 	vertex* center;
 	
 	half_edge* a;
