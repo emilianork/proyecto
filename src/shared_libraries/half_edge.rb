@@ -14,7 +14,7 @@ module HalfEdge
   extend FFI::Library
   ffi_lib "lib/libhalf_edge.so"
 
-  class HalfEdge < FFI::Struct
+  class HalfEdge < FFI::ManagedStruct
     layout :first, Points::Point.by_ref, 
            :last, Points::Point.by_ref,
            :helper, Points::Point.by_ref,
@@ -23,6 +23,10 @@ module HalfEdge
            :prev, :pointer,
            :incident_face, :pointer,
            :name, :string
+
+    def self.release(ptr)
+      HalfEdge.free_object(ptr)
+    end
   end
 
   attach_function :init_half_edge, [Points::Point.by_ref, Points::Point.by_ref, :string], HalfEdge.by_ref

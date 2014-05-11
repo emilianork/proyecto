@@ -19,11 +19,16 @@ module Voronoi
   extend FFI::Library
   ffi_lib "lib/libvoronoi.so"
   
-  class Voronoi < FFI::Struct
+  class Voronoi < FFI::ManagedStruct
     layout :diagram, DCEL::DCEL.by_ref,
            :processing, List::List.by_ref,
            :seeds, List::List.by_ref,
            :degenerate_case, :int
+
+    def self.release(ptr)
+      Voronoi.free_object(ptr)
+    end
+    
   end
 
   attach_function :init_voronoi_diagram, [:double, :double], Voronoi.by_ref

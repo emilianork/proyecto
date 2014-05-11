@@ -11,7 +11,7 @@
 #ifndef DCEL_H_
 #define DCEL_H_
 
-#include "red_black_tree/rb_tree.h"
+#include "double_linked_list/double_linked_list.h"
 
 #include "face/face.h"
 #include "half_edge/half_edge.h"

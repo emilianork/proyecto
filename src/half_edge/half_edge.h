@@ -79,4 +79,6 @@ int half_edge_equals(half_edge* a, half_edge* b);
 
 /** Funcion que hace un casting de una arista, sirve para los tests. */
 half_edge* cast_half_edge(void* half_edge);
+
+double nround (double n, unsigned int c);
 #endif

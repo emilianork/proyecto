@@ -11,7 +11,7 @@ require File.expand_path(File.join(File.dirname(__FILE__), "../shared_libraries/
 
 def setup
   background 255, 255, 255
-  size(400, 400,P3D)
+  size(400, 400,P2D)
 
   # Genera un conjunto random de puntos dentro de la caja.
 
@@ -64,8 +64,8 @@ def draw_vertex_and_half_edges
 
     ruby_edge = []
 
-    ruby_edge << [edge[:first][:x], edge[:first][:y]]
-    ruby_edge << [edge[:last][:x], edge[:last][:y]]
+    ruby_edge << [edge[:first][:x].round(6), -edge[:first][:y].round(6)]
+    ruby_edge << [edge[:last][:x].round(6), -edge[:last][:y].round(6)]
     
     half_edge << ruby_edge
   end
@@ -110,10 +110,13 @@ end
 
 def next_step
   
-  if (Algorithms.steps_voronoi(@voronoi) == 0)
-    Algorithms.voronoi_incremental(@voronoi,@points[@index])
-    @index += 1
-  else
-    Algorithms.voronoi_incremental(@voronoi,nil)
+  if (@index <= @points.size) then
+  
+    if (Algorithms.steps_voronoi(@voronoi) == 0)
+      Algorithms.voronoi_incremental(@voronoi,@points[@index])
+      @index += 1
+    else
+      Algorithms.voronoi_incremental(@voronoi,nil)
+    end
   end
 end

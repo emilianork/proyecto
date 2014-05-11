@@ -12,6 +12,8 @@
 #define LEFT 0
 #define RIGHT 1
 
+#define DIGITS 6
+
 struct point {
 	double x;
 	double y;

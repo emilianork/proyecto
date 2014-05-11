@@ -19,8 +19,6 @@ module Algorithms
   extend FFI::Library
   ffi_lib "lib/libalgorithms.so"
   
-  attach_function :voronoi_incremental, [Voronoi::Voronoi.by_ref, Points::Point.by_ref], :void
-  
   attach_function :steps_voronoi, [Voronoi::Voronoi.by_ref], :int
-
+  attach_function :voronoi_incremental, [Voronoi::Voronoi.by_ref, Points::Point.by_ref], :void
 end

@@ -7,6 +7,8 @@ require File.expand_path(File.join(File.dirname(__FILE__), "list_tests"))
 require File.expand_path(File.join(File.dirname(__FILE__), "rb_tree_tests"))
 require File.expand_path(File.join(File.dirname(__FILE__), "points_tests"))
 require File.expand_path(File.join(File.dirname(__FILE__), "half_edge_tests"))
+require File.expand_path(File.join(File.dirname(__FILE__), "voronoi_tests"))
+
 
 #
 # Reabre el modulo de Test para agregar los metodos que corren las pruebas
@@ -43,7 +45,7 @@ module Test
   def self.run
     puts "Corriendo Tests:\n\n"
     @@test_number = 0
-    total_tests = 17
+    total_tests = 8
     
     assert("2d_points.h: create_copy_point",TestPoints.create_copy_point)
     puts ""
@@ -62,25 +64,9 @@ module Test
     assert("double_linked_list.h: pick en una lista no vacia", 
            TestList.pick)
     puts ""
+    
+    assert("voronoi", TestVoronoi.simple)
 
-    assert("rb_tree.h: rb_min en un arbol vacio", TestRBTree.min_on_empty_tree)
-    assert("rb_tree.h: rb_max en un arbol vacio", TestRBTree.max_on_empty_tree)
-    assert("rb_tree.h: rb_search en un arbol vacio", 
-           TestRBTree.search_on_empty_tree)
-    assert("rb_tree.h: rb_delete en un arbol vacio", 
-           TestRBTree.delete_on_empty_tree)
-    
-    assert("rb_tree.h: rb_min", TestRBTree.rb_min)
-    assert("rb_tree.h: rb_max", TestRBTree.rb_max)
-    assert("rb_tree.h: rb_search",TestRBTree.rb_search)
-    assert("rb_tree.h: rb_insert y rb_delete de" + 
-           " numberos positivos", TestRBTree.insert_delete_positive_numbers)
-    assert("rb_tree.h: rb_insert y rb_delete de" + 
-           " numberos negativos", TestRBTree.insert_delete_negative_numbers)
-    assert("rb_tree.h: rb_insert y rb_delete de" + 
-           " numberos repetidos", TestRBTree.insert_delete_repeat_numbers)
-    puts ""
-    
     puts "\nTests aprobados: #{@@test_number}"
     puts "Tests fallidos: #{total_tests - @@test_number}"
   end

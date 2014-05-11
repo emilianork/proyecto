@@ -19,13 +19,18 @@ module List
                    :face,
                    :x)
 
-  class List < FFI::Struct
+  class List < FFI::ManagedStruct
     layout :head, :pointer,
            :tail, :pointer,
            :size, :int,
            :element, Item_type
-  end
 
+    def self.release(ptr)
+    List.free_object(ptr)
+    end
+    
+  end
+  
   attach_function :init_double_linked_list, [Item_type], List.by_ref
   attach_function :destroy_double_linked_list, [List.by_ref], :void
   

@@ -82,10 +82,8 @@ list* create_copy_list(list* list)
 	struct list_item* tmp;
 	tmp = list->head;
 	
-	while(tmp != NULL) {
+	for(tmp = list->head; tmp != NULL; tmp = tmp->right)
 		push_back(copy, tmp->element);
-		tmp = tmp->right;
-	}
 
 	return copy;
 }

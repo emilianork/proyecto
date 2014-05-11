@@ -11,7 +11,7 @@ module Points
   extend FFI::Library
   ffi_lib "lib/lib2d_points.so"
 
-  class Point < FFI::Struct
+  class Point < FFI::ManagedStruct
     layout :x, :double,
            :y, :double,
            :incident_edge, :pointer,
@@ -20,6 +20,10 @@ module Points
            :intersection, :pointer,
            :face, :pointer,
            :distinct_color, :int
+
+    def self.release(ptr)
+      Points.free_object(ptr)
+    end
   end
   
   attach_function :init_point_empty, [], Point.by_ref

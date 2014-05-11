@@ -19,12 +19,17 @@ module RBTree
                     :face,
                     :x)
 
-  class Tree < FFI::Struct
+  class Tree < FFI::ManagedStruct
     layout :root, :pointer,
            :size, :int,
            :type, Item_type,
            :min, :pointer,
-           :max, :pointer  
+           :max, :pointer
+    
+    def self.release(ptr)
+      RBTree.free_object(ptr)
+    end
+    
   end
 
   attach_function :init_rb_tree, [Item_type], Tree.by_ref

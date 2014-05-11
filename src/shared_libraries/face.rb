@@ -13,11 +13,16 @@ module Face
   extend FFI::Library
   ffi_lib "lib/libface.so"
 
-  class Face < FFI::Struct
+  class Face < FFI::ManagedStruct
     layout :name, :string,
            :outer_componenet, HalfEdge::HalfEdge.by_ref,
            :inner_component, :pointer,
            :center, Points::Point.by_ref
+   
+
+    def self.release(ptr)
+        Face.free_object(ptr)
+    end
     
   end
   

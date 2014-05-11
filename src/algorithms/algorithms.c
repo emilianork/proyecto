@@ -16,11 +16,6 @@ void cut_half_edge(half_edge* a, vertex* intersection_a, dcel* diagram)
 {
 	half_edge *tmp1, *tmp2;
 
-	printf("\nArista a cortar\n");
-	printf("Half_edge: (%f,%f),(%f,%f)\n", a->first->x, a->first->y, a->last->x,
-	        a->last->y);
-	printf("Intersección, (%f,%f)\n\n", intersection_a->x, intersection_a->y);
-		
 	tmp1 = init_half_edge(a->first, intersection_a, "\0");
 	tmp2 = init_half_edge(intersection_a, a->first, "\0");
 	
@@ -128,7 +123,28 @@ face* add_new_face(half_edge* a, half_edge* b, vertex* seed,
 void merge_faces(face* original_face, face* new_face, dcel* diagram) 
 {
 	
-	printf("ACA PASO\n");
+	list* ori_he = incident_he_to_f(original_face);
+	list* new_he = incident_he_to_f(new_face);
+
+	item* temporal;
+
+	printf("Original_Face:\n");
+
+	for (temporal = ori_he->head; temporal != NULL; temporal = temporal->right) {
+		half_edge* tmp_he = temporal->element;
+
+		printf("(%f,%f) (%f,%f)\n", tmp_he->first->x, tmp_he->first->y,
+			   tmp_he->last->x, tmp_he->last->y);
+	}
+	
+	printf("New_Face:\n");
+	for (temporal = new_he->head; temporal != NULL; temporal = temporal->right) {
+		half_edge* tmp_he = temporal->element;
+
+		printf("(%f,%f) (%f,%f)\n", tmp_he->first->x, tmp_he->first->y,
+			   tmp_he->last->x, tmp_he->last->y);
+	}
+
 
 	list* incident_he = incident_he_to_f(original_face);
 	item* tmp_list;
@@ -189,7 +205,7 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 	tmp3->last->incident_edge = tmp3->next;
 
 	/** Primero borro los puntos que ya no vamos a usar.*/
-	
+
 	for(tmp_list = to_destroy->head; tmp_list != NULL; 
 		tmp_list = tmp_list->right) {
 		
@@ -207,7 +223,6 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 
 		}
 
-		
 		if (!point_equals(tmp_last, tmp4->last) &&
 			!point_equals(tmp_last, tmp3->last)) {
 			
@@ -224,8 +239,11 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 		
 		half_edge* tmp_he = tmp_list->element;
 
-		dcel_pop_half_edge(diagram, tmp_he);
+		dcel_pop_half_edge(diagram, tmp_he->twin);
+		destroy_half_edge(tmp_he->twin);
 		
+
+		dcel_pop_half_edge(diagram, tmp_he);
 		destroy_half_edge(tmp_he);
 		
 	}
@@ -458,12 +476,11 @@ void voronoi_incremental(voronoi* voronoi, vertex* vertex)
 		
 	} 
 
-
 	/**
 	 * 2. Si la lista voronoi->processing no esta vacia.
 	 */
 	
-	if (!empty_list(voronoi->processing)) {
+	if (steps_voronoi(voronoi)) {
 		
 		struct point* seed = voronoi->seeds->tail->element;
 		
@@ -589,7 +606,7 @@ void voronoi_incremental(voronoi* voronoi, vertex* vertex)
 		 *     marco al ultimo punto de voronoi->seeds como color no
 		 *     distinto.
 		 */
-		if (empty_list(voronoi->processing)) {
+		if (!steps_voronoi(voronoi)) {
 			struct point* last_seed = voronoi->seeds->tail->element;
 			last_seed->distinct_color = FALSE;
 		}
@@ -875,22 +892,87 @@ void add_half_edge_voronoi(up_data* data)
 
 		merge_faces(center->face, new_face, diagram);
 		
+
+		list* cara_resultante = incident_he_to_f(center->face);
+		
+		item* temporal;
+
+		printf("Merge_Face:\n");
+
+		for (temporal = cara_resultante->head; temporal != NULL; 
+			 temporal = temporal->right) {
+			half_edge* tmp_he = temporal->element;
+			
+			printf("(%f,%f) (%f,%f)\n", tmp_he->first->x, tmp_he->first->y,
+				   tmp_he->last->x, tmp_he->last->y);
+		}
+
 		/**
 		 * 2.3 Encolo las caras adyacentes a la interseccion que no se
 		 *     repita.
 		 */
 
 		if (count == 1) {
+
+			printf("Me preparo para agregar nueva cara:\n");
+			
 			if (next_face_to_process == NULL) {
 				printf("La cara nueva que se iba a procesar es nula\n.");
 				exit(EXIT_FAILURE);
 			}
 			
+			
+			if (next_face_to_process->outer_component == NULL) {
+				
+				list* faces = voronoi->diagram->face;
+
+				item* tmps;
+
+				printf("\n\nCaras finales\n");
+
+				for(tmps = faces->head; tmps != NULL; tmps = tmps->right) {
+					printf("\nCara:\n");
+					
+					item* tmp_a;
+					
+					list* aristas = incident_he_to_f(tmps->element);
+					
+					for (tmp_a = aristas->head; tmp_a != NULL; 
+						 tmp_a = tmp_a->right) {
+						
+						half_edge* tmp_he = tmp_a->element;
+						
+						printf("(%f,%f) (%f,%f)\n", tmp_he->first->x,
+							   tmp_he->first->y, tmp_he->last->x, 
+							   tmp_he->last->y);
+					}
+					
+				}
+				
+				printf("\n\nAristas Finales\n");
+				
+				for(tmps = voronoi->diagram->half_edge->head;
+					tmps != NULL; tmps = tmps->right) {
+					
+					half_edge* tmp_he = tmps->element;
+					
+					printf("(%f,%f) (%f,%f)\n", tmp_he->first->x,
+						   tmp_he->first->y, tmp_he->last->x, 
+						   tmp_he->last->y);
+					
+					
+				}
+			}
+			
+			printf("Lista de Caras por procesar: %d\n"
+				   ,voronoi->processing->size);
+
 			if (next_face_to_process->outer_component != NULL) {
 				
 				half_edge* tmp_he = next_face_to_process->outer_component;
 
-				printf("Outer_component: (%f,%f), (%f,%f)\n", tmp_he->first->x, tmp_he->first->y, tmp_he->last->x, tmp_he->last->y);
+				printf("Outer_component: (%f,%f), (%f,%f)\n", tmp_he->first->x,
+					   tmp_he->first->y, tmp_he->last->x, tmp_he->last->y);
 
 				push_back(voronoi->processing,next_face_to_process);
 			}

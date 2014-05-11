@@ -142,5 +142,5 @@ int half_edge_equals(half_edge* a, half_edge* b)
 
 half_edge* cast_half_edge(void* half_edge)
 {
-	return (struct half_edge*) half_edge;
+	return half_edge;
 }

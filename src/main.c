@@ -39,9 +39,35 @@ int main(void)
 
 	while(steps_voronoi(voronoi)) {
 		voronoi_incremental(voronoi, NULL);
-	
 	}
 
+
+	voronoi_incremental(voronoi, NULL);
+	voronoi_incremental(voronoi, NULL);
+	voronoi_incremental(voronoi, NULL);
+	voronoi_incremental(voronoi, NULL);
+
+	voronoi_incremental(voronoi, NULL);
+	voronoi_incremental(voronoi, NULL);
+	voronoi_incremental(voronoi, NULL);
+	voronoi_incremental(voronoi, NULL);
+
+
+
+	printf("\n\nAristas Finales\n");
+				
+	item* tmps;
+	for(tmps = voronoi->diagram->half_edge->head;
+		tmps != NULL; tmps = tmps->right) {
+		
+		half_edge* tmp_he = tmps->element;
+		
+		printf("(%f,%f) (%f,%f)\n", tmp_he->first->x,
+			   tmp_he->first->y, tmp_he->last->x, 
+			   tmp_he->last->y);
+		
+	}
+	
 	
 	return EXIT_SUCCESS;
 }
