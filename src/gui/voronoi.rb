@@ -21,9 +21,6 @@ def setup
   rand_size.times.each do
     random_vertex << [rand(width).to_f, rand(height).to_f]
   end
-  
-  random_vertex = [[50.0, 100.0], [350.0, 100.0], [201.0,100.0]]
-
 
   puts "Puntos"
   p random_vertex
