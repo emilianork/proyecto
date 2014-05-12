@@ -16,6 +16,9 @@
 
 int main(void)
 {			  
+
+	//[26.0, 38.0], [215.0, 115.0], [122.0, 60.0], [66.0, 81.0],
+
 	//10.000000 362.000000
 	//309.000000 116.000000
 	//103.000000 67.000000
@@ -23,25 +26,24 @@ int main(void)
 	//277.000000 126.000000
 	//309.000000 349.000000
 
-	vertex* A = init_point(299.0, 193.0, "\0");
-	vertex* B = init_point(64.0,  58.0,  "\0");
-	vertex* C = init_point(40.0,  267.0, "\0");
-	vertex* D = init_point(391.0, 87.0,  "\0");
-	vertex* E = init_point(218.0, 374.0, "\0");
-	vertex* F = init_point(284.0, 268.0, "\0");
-	vertex* G = init_point(270.0, 226.0, "\0");
+	//299.0, 193.0
+	//64.0,  58.0
+	//40.0,  267.0
+	//391.0, 87.0
+	//218.0, 374.0,
+	//284.0, 268.0
+	//270.0, 226.
 
+	vertex* A = init_point(50.0, 100.0, "\0");
+	vertex* B = init_point(350.0, 100.0,  "\0");
+	vertex* C = init_point(200.0, 100.0, "\0");
+						   
 	list* vertices = init_double_linked_list(POINT);
 	
 	push_back(vertices, A);
 	push_back(vertices, B);
-	push_back(vertices, C);
-	push_back(vertices, D);
-	push_back(vertices, E);	
-	push_back(vertices, F);
-	push_back(vertices, G);
+	push_back(vertices,C);
 	
-
 	voronoi* voronoi = process_incremental(400.0,400.0, vertices);
 
 	printf("\n\nAristas Finales\n");

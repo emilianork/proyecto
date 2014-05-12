@@ -181,6 +181,8 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 
 	item* temporal;
 
+	printf("Merging_Faces\n");
+
 	printf("Original_Face:\n");
 
 	for (temporal = ori_he->head; temporal != NULL; temporal = temporal->right) {
@@ -275,7 +277,7 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 		if (!point_equals(tmp_first, tmp4->last) &&
 			!point_equals(tmp_first, tmp3->last)) {
 			
-			//dcel_pop_vertex(diagram,tmp_first);
+			dcel_pop_vertex(diagram,tmp_first);
 
 			//destroy_point(tmp_first);
 
@@ -284,7 +286,7 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 		if (!point_equals(tmp_last, tmp4->last) &&
 			!point_equals(tmp_last, tmp3->last)) {
 			
-			//dcel_pop_vertex(diagram,tmp_last);
+			dcel_pop_vertex(diagram,tmp_last);
 
 			//destroy_point(tmp_last);
 		}
@@ -344,6 +346,16 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 		cut_vertex(tmp4, diagram);
 	}
 	
+
+	printf("original_face:\n");
+	for (temporal = ori_he->head; temporal != NULL; temporal = temporal->right) {
+		half_edge* tmp_he = temporal->element;
+		
+		printf("(%f,%f) (%f,%f)\n", tmp_he->first->x, tmp_he->first->y,
+			   tmp_he->last->x, tmp_he->last->y);
+	}
+
+	printf("Finish\n");
 
 }
 
@@ -551,6 +563,7 @@ void voronoi_incremental(voronoi* voronoi, vertex* vertex)
 		}
 
 		if (face == NULL) {
+			printf("ALGO MALO PASO\n");
 			exit(EXIT_FAILURE);
 		}
 
@@ -798,43 +811,61 @@ void add_half_edge_voronoi(up_data* data)
 		tmp2 = new_face->outer_component->next->twin->incident_face;
 
 		int count = 0;
-		half_edge* non_adyacent_to_fe;
+		half_edge* non_adyacent_to_fe = NULL;
 
-		if (tmp1->outer_component != NULL && tmp2->outer_component != NULL) {
 		
-		
+		if (tmp1->outer_component == NULL && tmp2->outer_component == NULL) {
+
+			printf("Comprobando caso degenerado\n");
+
 			list* half_edges = incident_he_to_f(new_face);
 			
 			item* tmp;
 			for (tmp = half_edges->head; tmp != NULL; tmp = tmp->right) {
 				half_edge* tmp_he;
 				tmp_he = tmp->element;
-				
+
+				printf("Arista: (%f,%f), (%f,%f)\n", tmp_he->first->x, tmp_he->first->y, tmp_he->last->x, tmp_he->last->y);
+
 				tmp_he = tmp_he->twin;
-				
+
 				if (((face*) tmp_he->incident_face)->outer_component != NULL &&
-					new_face->outer_component != tmp_he->twin ) {
-					
+					new_face->outer_component != tmp_he->twin) {
 					count++;
-					non_adyacent_to_fe = tmp_he;
+					
+					printf("Arista Candidata: (%f,%f), (%f,%f)\n", tmp_he->first->x, tmp_he->first->y, tmp_he->last->x, tmp_he->last->y);
+
+					non_adyacent_to_fe = tmp_he->twin;
 				}
 			}
 		}
+
+		printf("Termine de comprobar\n");
 
 		/**
 		 * 1.5.1 Elimino a la arista y encolo a la cara.
 		 */
 
+
+		printf("count: %d\n", count);
+		
 		if (count == 1 && !voronoi->degenerate_case) {
+
+			printf("zxc ACA PASO\n");
+
 			push_back(voronoi->processing, 
-					  non_adyacent_to_fe->incident_face);
-
-			vertex* ncenter = ((face*)non_adyacent_to_fe->incident_face)->center;
-
-			erase_half_edge(non_adyacent_to_fe, diagram);
+					  non_adyacent_to_fe->twin->incident_face);
 			
-			new_face->center = ncenter;
-			ncenter->face = new_face;
+
+			face* old_face = non_adyacent_to_fe->twin->incident_face;
+			vertex* ncenter = old_face->center;
+
+			//erase_half_edge(non_adyacent_to_fe, diagram);
+			
+			merge_faces(old_face, new_face, diagram);
+
+			old_face->center = ncenter;
+			ncenter->face = old_face;
 			
 			voronoi->degenerate_case = TRUE;
 		} else {
@@ -1096,7 +1127,7 @@ void write_voronoi(voronoi* voronoi, FILE* fp) {
 voronoi* process_incremental(double width, double height, list* vertices) 
 {
 	if (vertices == NULL)
-		return;
+		return NULL;
 
 
 	FILE * fp;

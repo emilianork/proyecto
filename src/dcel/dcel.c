@@ -122,6 +122,7 @@ void dcel_pop_vertex(dcel* dcel, vertex* vertex)
 		}
 	}
 
+	return;
 	
 	printf("No se encontro el vertice en la DCEL: (%f,%f)\n", vertex->x,
 		   vertex->y);
@@ -334,15 +335,27 @@ list* incident_he_to_f(face* face)
 
 int contain_vertex(face* face, vertex* vertex)
 {
+
+	printf("Contain_vertex(), (%f,%f)\n", vertex->x, vertex->y);
+	
 	list* incident_he = incident_he_to_f(face);
 
 	int direction = LEFT;
 
 	item *tmp;
+
+	
 	for (tmp = incident_he->head; tmp != NULL; tmp = tmp->right) {
 		
+
 		half_edge* tmp_he = tmp->element;
 		
+
+		printf("Arista: (%f,%f), (%f,%f)\n", tmp_he->first->x, tmp_he->first->y,
+			   tmp_he->last->x, tmp_he->last->y);
+
+		
+
 		if (curve_orientation(tmp_he->first, tmp_he->last, vertex) != LEFT) {
 			direction = RIGHT;
 			break;
@@ -363,7 +376,7 @@ int contain_vertex(face* face, vertex* vertex)
 		}
 	}
 	
-	if (direction == RIGHT) 
+	if (direction == RIGHT)
 		return TRUE;
 	
 	return FALSE;

@@ -22,7 +22,7 @@ def setup
     random_vertex << [rand(width).to_f, rand(height).to_f]
   end
   
-  #random_vertex = [[25.0, 39.0], [316.0, 308.0], [179.0, 48.0], [7.0, 71.0]]
+ # random_vertex = [[50.0, 100.0], [350.0, 100.0], [201.0,100.0]]
 
 
   puts "Puntos"
