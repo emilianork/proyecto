@@ -16,46 +16,36 @@
 
 int main(void)
 {			  
+	//10.000000 362.000000
+	//309.000000 116.000000
+	//103.000000 67.000000
+	//87.000000 194.000000
+	//277.000000 126.000000
+	//309.000000 349.000000
 
-	voronoi *voronoi = init_voronoi_diagram(400.0,400.0);
+	vertex* A = init_point(299.0, 193.0, "\0");
+	vertex* B = init_point(64.0,  58.0,  "\0");
+	vertex* C = init_point(40.0,  267.0, "\0");
+	vertex* D = init_point(391.0, 87.0,  "\0");
+	vertex* E = init_point(218.0, 374.0, "\0");
+	vertex* F = init_point(284.0, 268.0, "\0");
+	vertex* G = init_point(270.0, 226.0, "\0");
 
-	vertex* A = init_point(26.0,96.0,"\0");
-	vertex* B = init_point(347.0,234.0,"\0");
-	vertex* C = init_point(136.0,362.0,"\0");
-
-	voronoi_incremental(voronoi, A);
-
-	while(steps_voronoi(voronoi)) {
-		voronoi_incremental(voronoi, NULL);
-	}
-
-	voronoi_incremental(voronoi, B);
+	list* vertices = init_double_linked_list(POINT);
 	
-	while(steps_voronoi(voronoi)) {
-		voronoi_incremental(voronoi, NULL);
-	}
+	push_back(vertices, A);
+	push_back(vertices, B);
+	push_back(vertices, C);
+	push_back(vertices, D);
+	push_back(vertices, E);	
+	push_back(vertices, F);
+	push_back(vertices, G);
+	
 
-    voronoi_incremental(voronoi, C);	
-
-	while(steps_voronoi(voronoi)) {
-		voronoi_incremental(voronoi, NULL);
-	}
-
-
-	voronoi_incremental(voronoi, NULL);
-	voronoi_incremental(voronoi, NULL);
-	voronoi_incremental(voronoi, NULL);
-	voronoi_incremental(voronoi, NULL);
-
-	voronoi_incremental(voronoi, NULL);
-	voronoi_incremental(voronoi, NULL);
-	voronoi_incremental(voronoi, NULL);
-	voronoi_incremental(voronoi, NULL);
-
-
+	voronoi* voronoi = process_incremental(400.0,400.0, vertices);
 
 	printf("\n\nAristas Finales\n");
-				
+	
 	item* tmps;
 	for(tmps = voronoi->diagram->half_edge->head;
 		tmps != NULL; tmps = tmps->right) {
@@ -67,8 +57,6 @@ int main(void)
 			   tmp_he->last->y);
 		
 	}
-	
-	
 	return EXIT_SUCCESS;
 }
 

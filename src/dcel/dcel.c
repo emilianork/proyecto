@@ -122,8 +122,25 @@ void dcel_pop_vertex(dcel* dcel, vertex* vertex)
 		}
 	}
 
+	
 	printf("No se encontro el vertice en la DCEL: (%f,%f)\n", vertex->x,
 		   vertex->y);
+
+	printf("Vertices: \n");
+	list* points = dcel->vertex;
+	item* tmps;
+
+	
+	printf("Size: %d\n", points->size);
+
+	for(tmps = points->head; tmps != NULL; tmps = tmps->right) {
+		struct point *temp = tmps->element;
+		
+		printf("(%f,%f)\n", temp->x, temp->y);
+		
+	}
+	
+	
 	exit(EXIT_FAILURE);
 }
 
@@ -268,6 +285,8 @@ list* incident_he_to_f(face* face)
 {
 	list* list = init_double_linked_list(HALF_EDGE);
 
+	int count = 0;
+
 	if (face->outer_component != NULL) {
 
 		half_edge* init_half_edge = face->outer_component;
@@ -280,12 +299,17 @@ list* incident_he_to_f(face* face)
 
 			push_back(list, tmp);
 
+			if (++count == 1000) {
+				printf("incident_he_to_f(): Entro en loop\n");
+				exit(EXIT_FAILURE);
+			}
+
 		}
 
 	}
 
 	if (face->inner_components != NULL) {
-
+		
 		item* tmp1 = ((struct double_linked_list*) face->inner_components)->head;
 		half_edge *init_half_edge, *tmp2;
 

@@ -22,13 +22,31 @@ def setup
     random_vertex << [rand(width).to_f, rand(height).to_f]
   end
   
-  #p random_vertex
+  #random_vertex = [[25.0, 39.0], [316.0, 308.0], [179.0, 48.0], [7.0, 71.0]]
 
-  @points = [[26.0, 96.0], [347.0, 234.0], [136.0, 362.0]].map {|x| Points.init_point(x[0], x[1], "")}
+
+  puts "Puntos"
+  p random_vertex
+  puts ""
+
+  points = random_vertex.map do
+    |x| 
+    Points.init_point(x[0], x[1], "")
+  end
   
+  
+  list = List.init_double_linked_list(:point)
+
+  points.each do
+    |point|
+    List.push_back(list, point)
+  end
+
+  Algorithms.process_incremental(width, height, list)
+
+  read
+
   @index = 0
-  
-  @voronoi = Voronoi.init_voronoi_diagram(width,height)
   
   @up = false
  
@@ -37,9 +55,9 @@ end
 def draw
   if key_pressed?
     if @up
-      next_step
       translate(0, height)
       draw_vertex_and_half_edges
+      @index += 1
       @up = false
     else
       @up = true
@@ -51,72 +69,70 @@ end
 #
 # Esta funcion la debes de modificar para que dibuje los puntos y aristas
 def draw_vertex_and_half_edges
-
-  background 255, 255, 255
-
-  c_half_edges = List.create_copy_list(@voronoi[:diagram][:half_edge])
-
-  half_edge = []
-
-  c_half_edges[:size].times.each do
-    
-    edge = HalfEdge.cast_half_edge(List.pop_front(c_half_edges))
-
-    ruby_edge = []
-
-    ruby_edge << [edge[:first][:x].round(6), -edge[:first][:y].round(6)]
-    ruby_edge << [edge[:last][:x].round(6), -edge[:last][:y].round(6)]
-    
-    half_edge << ruby_edge
-  end
-
-  puts "Ruby Aristas"
-
-  half_edge.each do
-    |half_edge|
-    a = half_edge[0]
-    b = half_edge[1]
-
-    puts "#{a}  #{b}"
-
-    line(a[0].abs,-a[1].abs,b[0].abs,-b[1].abs)
-  end
-  c_seeds = List.create_copy_list(@voronoi[:seeds])
   
-  array_seeds = []
-
-  c_seeds[:size].times.each do
-    array_seeds << List.pop_front(c_seeds)
-  end
-
-  array_seeds.each do
-    |point|
+  if (@process[@index] != nil)
+    background 255, 255, 255
     
-    casted_point = Points.cast_point(point)
-
-    vertex = [casted_point[:x], casted_point[:y], casted_point[:distinct_color]]
-
-    if (vertex[2] == 1)
-      fill(255,0,0)
-    else
-      fill(0,0,0)
+    vertices = @process[@index][:vertices]
+    half_edges = @process[@index][:half_edges]
+    
+    vertices.each do
+      |vertex|
+      ellipse(vertex[0], -vertex[1], 5.0,5.0)
     end
-    ellipse(vertex[0], -vertex[1], 5.0,5.0)
+
+    half_edges.each do
+      |edge|
+      
+      a = edge[0]
+      b = edge[1]
+
+      line(a[0].abs,-a[1].abs,b[0].abs,-b[1].abs)
+    end
   end
 end
 
-# Public: Manda llamar a la funcion para calcular voronoi y convierte los half_edges
-#         a aristas en Ruby
 
-def next_step
-  
-  if (@index <= @points.size) then
-  
-    if (Algorithms.steps_voronoi(@voronoi) == 0)
-      Algorithms.voronoi_incremental(@voronoi,@points[@index])
-      @index += 1
-    else
-      Algorithms.voronoi_incremental(@voronoi,nil)
-    end
+def read()
+
+  @process = []
+  f = File.open("salida.txt", "r")
+
+  if (f.eof?)
+    puts "C todavía no termino de escribir el archivo"
+    exit(0)
   end
+
+  while (not(f.eof?))
+    
+    vertices = []
+    size_vertex = f.gets.split.last.to_i
+    
+    size_vertex.times.each do
+      line = f.gets.split
+      
+      vertex = [line[0].to_f, line[1].to_f]
+      
+      vertices << vertex
+      
+    end
+    
+    half_edges = []
+    size_edges = f.gets.split.last.to_i
+    
+    size_edges.times.each do
+      line = f.gets.split
+      
+      edge = [[line[0].to_f,line[1].to_f],[line[2].to_f, line[3].to_f]]
+      
+      half_edges << edge
+
+    end
+
+    @process << {vertices: vertices, half_edges: half_edges}
+
+  end  
+
+  f.close
+  
 end

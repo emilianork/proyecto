@@ -18,9 +18,11 @@ vertex* init_point_empty()
 		printf("Ya no hay memoria disponible: init_double_linked_list()");
 		exit(EXIT_FAILURE);
 	}
-
-	point->x = 0.0;
-	point->y = 0.0;
+	
+	int cero = 0.0;
+	
+	point->x = cero;
+	point->y = cero;
 
 	point->half_edge = point->intersection = point->face = NULL;
 	point->distinct_color = FALSE;
@@ -135,8 +137,16 @@ int point_less_than_x(vertex* a, vertex* b)
 
 int point_equals_x(vertex* a, vertex* b)
 {
-	return a->x == b->x;
+	return ((a->x - (CONST*EPSILON)) <= b->x && 
+			b->x <= (a->x + (CONST*EPSILON)));
 }
+
+int point_equals_y(vertex* a, vertex* b)
+{
+	return ((a->y - (CONST*EPSILON)) <= b->y && 
+			b->y <= (a->y + (CONST*EPSILON)));
+}		
+		
 
 vertex* cast_point(void* a)
 {

@@ -93,6 +93,7 @@ int point_equals(vertex* a, vertex* b);
 /** Funciones de orden con respecto al eje X. */
 int point_less_than_x(vertex* a, vertex* b);
 int point_equals_x(vertex* a, vertex* b);
+int point_equals_y(vertex* a, vertex* b);
 
 /** Funcion que hace un casting del punto, sirve para los tests. */
 vertex* cast_point(void* a);

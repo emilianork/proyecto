@@ -12,6 +12,45 @@
 #include <time.h>
 
 
+void cut_vertex(half_edge* half_edge, dcel* diagram)
+{
+	struct half_edge *tmp1, *tmp2;
+	tmp1 = half_edge->next;
+	tmp2 = tmp1->twin;
+
+	half_edge->next = tmp1->next;
+	tmp1->next->prev = half_edge;
+
+	half_edge->twin->prev = tmp2->prev;
+	tmp2->prev->next = half_edge->twin;
+
+	face* face_1 = half_edge->incident_face;
+	face* face_2 = half_edge->twin->incident_face;
+	
+
+	if (face_1->outer_component != NULL)
+		face_1->outer_component = half_edge;
+	
+	if (face_2->outer_component != NULL)
+		face_2->outer_component = half_edge->twin;
+	
+	half_edge->last = tmp1->last;
+	half_edge->twin->first = tmp2->first;
+
+	half_edge->last->incident_edge = half_edge->next;
+
+	dcel_pop_half_edge(diagram,tmp1);
+	dcel_pop_half_edge(diagram,tmp2);
+
+	dcel_pop_vertex(diagram,tmp1->first);
+
+	destroy_point(tmp1->first);
+	
+	destroy_half_edge(tmp1);
+	destroy_half_edge(tmp2);
+	
+}
+
 void cut_half_edge(half_edge* a, vertex* intersection_a, dcel* diagram)
 {
 	half_edge *tmp1, *tmp2;
@@ -91,7 +130,11 @@ face* add_new_face(half_edge* a, half_edge* b, vertex* seed,
 
 	dcel_insert_face(diagram, new_face);
 	
-	((face*)tmp2->incident_face)->outer_component = tmp2;
+	face* aux_face = tmp2->incident_face;
+	
+	if (aux_face->outer_component != NULL)
+		aux_face->outer_component = tmp2;
+	
 	new_face->outer_component = tmp1;
 
 	/**
@@ -123,6 +166,16 @@ face* add_new_face(half_edge* a, half_edge* b, vertex* seed,
 void merge_faces(face* original_face, face* new_face, dcel* diagram) 
 {
 	
+	if (original_face->outer_component == NULL) {
+		printf("merge_faces: original_face es la cara exterior\n");
+		exit(EXIT_FAILURE);
+	}
+
+	if (new_face->outer_component == NULL) {
+		printf("merge_faces: new_face es la cara exterior\n");
+		exit(EXIT_FAILURE);
+	}
+
 	list* ori_he = incident_he_to_f(original_face);
 	list* new_he = incident_he_to_f(new_face);
 
@@ -149,8 +202,10 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 	list* incident_he = incident_he_to_f(original_face);
 	item* tmp_list;
 	
-	/** original_face->outer_component no debe ser una arista que 
-	    comparta adyacencia con new_face. */
+	/**
+	 *  original_face->outer_component no debe ser una arista que 
+	 *   comparta adyacencia con new_face. 
+	 */
 	
 	for(tmp_list = incident_he->head; tmp_list != NULL; 
 		tmp_list = tmp_list->right) {
@@ -188,6 +243,7 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 	}
 
 	half_edge *tmp1, *tmp2, *tmp3, *tmp4;
+
 	
 	tmp1 = to_destroy->head->element;
 	tmp2 = to_destroy->tail->element;
@@ -204,6 +260,8 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 	tmp4->last->incident_edge = tmp4->next;
 	tmp3->last->incident_edge = tmp3->next;
 
+	((face*)tmp4->incident_face)->outer_component = tmp4;
+
 	/** Primero borro los puntos que ya no vamos a usar.*/
 
 	for(tmp_list = to_destroy->head; tmp_list != NULL; 
@@ -217,18 +275,18 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 		if (!point_equals(tmp_first, tmp4->last) &&
 			!point_equals(tmp_first, tmp3->last)) {
 			
-			dcel_pop_vertex(diagram,tmp_first);
+			//dcel_pop_vertex(diagram,tmp_first);
 
-			destroy_point(tmp_first);
+			//destroy_point(tmp_first);
 
 		}
 
 		if (!point_equals(tmp_last, tmp4->last) &&
 			!point_equals(tmp_last, tmp3->last)) {
 			
-			dcel_pop_vertex(diagram,tmp_last);
+			//dcel_pop_vertex(diagram,tmp_last);
 
-			destroy_point(tmp_last);
+			//destroy_point(tmp_last);
 		}
 	}
 	
@@ -240,11 +298,11 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 		half_edge* tmp_he = tmp_list->element;
 
 		dcel_pop_half_edge(diagram, tmp_he->twin);
-		destroy_half_edge(tmp_he->twin);
+		//destroy_half_edge(tmp_he->twin);
 		
 
 		dcel_pop_half_edge(diagram, tmp_he);
-		destroy_half_edge(tmp_he);
+		//destroy_half_edge(tmp_he);
 		
 	}
 
@@ -260,6 +318,32 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 	dcel_pop_face(diagram,new_face);
 
 	destroy_face(new_face);
+
+
+	/**
+	 * Elimino los vertices que ya no son necesarios.
+	 */
+
+	vertex* first = tmp3->first;
+	vertex* second = tmp3->last;
+	vertex* third = tmp3->next->last;
+
+	if ((point_equals_x(first,second) && point_equals_x(first,third)) ||
+		(point_equals_y(first,second) && point_equals_y(first,third))) {
+		
+		cut_vertex(tmp3, diagram);
+	}
+
+	first = tmp4->first;
+	second = tmp4->last;
+	third = tmp4->next->last;
+
+	if ((point_equals_x(first,second) && point_equals_x(first,third)) ||
+		(point_equals_y(first,second) && point_equals_y(first,third))) {
+		
+		cut_vertex(tmp4, diagram);
+	}
+	
 
 }
 
@@ -280,7 +364,9 @@ void erase_half_edge(half_edge* a, dcel* diagram)
 	a->next->prev = a->twin->prev;
 	a->twin->prev->next = a->next;
 
-	erase_face->outer_component = a->prev;
+
+	if (erase_face->outer_component != NULL)
+		erase_face->outer_component = a->prev;
 
 	dcel_pop_half_edge(diagram,a->twin);
 	dcel_pop_half_edge(diagram,a);
@@ -319,8 +405,8 @@ void erase_half_edge(half_edge* a, dcel* diagram)
 		dcel_pop_half_edge(diagram, tmp5);
 		dcel_pop_half_edge(diagram, tmp6);
 
-		destroy_half_edge(tmp5);
-		destroy_half_edge(tmp6);
+		//destroy_half_edge(tmp5);
+		//destroy_half_edge(tmp6);
 		
 	}
 
@@ -359,8 +445,8 @@ void erase_half_edge(half_edge* a, dcel* diagram)
 		dcel_pop_half_edge(diagram, tmp3);
 		dcel_pop_half_edge(diagram, tmp4);
 
-		destroy_half_edge(tmp3);
-		destroy_half_edge(tmp4);
+		//destroy_half_edge(tmp3);
+		//destroy_half_edge(tmp4);
 		
 	}
 
@@ -377,7 +463,8 @@ void erase_half_edge(half_edge* a, dcel* diagram)
 	
 	face* replace_face = a->twin->incident_face;
 	
-	replace_face->outer_component = tmp1;
+	if (replace_face->outer_component != NULL)
+		replace_face->outer_component = tmp1;
 
 	do {
 		tmp1->incident_face = replace_face;
@@ -387,8 +474,8 @@ void erase_half_edge(half_edge* a, dcel* diagram)
 	dcel_pop_face(diagram, erase_face);
 
 	destroy_face(erase_face);
-	destroy_half_edge(a->twin);
-	destroy_half_edge(a);
+	//destroy_half_edge(a->twin);
+	//destroy_half_edge(a);
 }
 
 up_data* init_upgrade_data(void)
@@ -665,7 +752,7 @@ void add_half_edge_voronoi(up_data* data)
 			if (point_equals(a->first, intersection_a))
 				a = a->prev;
 			
-			destroy_point(intersection_a);
+			//destroy_point(intersection_a);
 			
 		}
 
@@ -685,7 +772,7 @@ void add_half_edge_voronoi(up_data* data)
 			if (point_equals(b->first, intersection_b))
 				b = b->prev;
 			
-			destroy_point(intersection_b);
+			//destroy_point(intersection_b);
 
 		}
 
@@ -740,7 +827,7 @@ void add_half_edge_voronoi(up_data* data)
 
 		if (count == 1 && !voronoi->degenerate_case) {
 			push_back(voronoi->processing, 
-					  non_adyacent_to_fe->twin->incident_face);
+					  non_adyacent_to_fe->incident_face);
 
 			vertex* ncenter = ((face*)non_adyacent_to_fe->incident_face)->center;
 
@@ -787,7 +874,7 @@ void add_half_edge_voronoi(up_data* data)
 
 		if (tmp_v != NULL) {
 			
-			destroy_point(intersection_a);
+			//destroy_point(intersection_a);
 			intersection_a = tmp_v;
 			a_repeat = TRUE;
 			count++;
@@ -796,7 +883,7 @@ void add_half_edge_voronoi(up_data* data)
 		tmp_v = search_vertex(diagram,intersection_b);
 		
 		if (tmp_v != NULL) {
-			destroy_point(intersection_b);
+			//destroy_point(intersection_b);
 			intersection_b = tmp_v;
 			b_repeat = TRUE;
 			count++;
@@ -853,7 +940,7 @@ void add_half_edge_voronoi(up_data* data)
 
 			}
 			
-			destroy_point(intersection_a);
+			//destroy_point(intersection_a);
 			
 		}
 
@@ -867,7 +954,7 @@ void add_half_edge_voronoi(up_data* data)
 			if (point_equals(b->first, intersection_b))
 				b = b->prev;
 			
-			destroy_point(intersection_b);
+			//destroy_point(intersection_b);
 
 		}
 
@@ -928,7 +1015,7 @@ void add_half_edge_voronoi(up_data* data)
 
 				item* tmps;
 
-				printf("\n\nCaras finales\n");
+				/**printf("\n\nCaras finales\n");
 
 				for(tmps = faces->head; tmps != NULL; tmps = tmps->right) {
 					printf("\nCara:\n");
@@ -948,8 +1035,9 @@ void add_half_edge_voronoi(up_data* data)
 					}
 					
 				}
+				*/
 				
-				printf("\n\nAristas Finales\n");
+				/**printf("\n\nAristas Finales\n");
 				
 				for(tmps = voronoi->diagram->half_edge->head;
 					tmps != NULL; tmps = tmps->right) {
@@ -962,6 +1050,7 @@ void add_half_edge_voronoi(up_data* data)
 					
 					
 				}
+				*/
 			}
 			
 			printf("Lista de Caras por procesar: %d\n"
@@ -980,6 +1069,59 @@ void add_half_edge_voronoi(up_data* data)
 		
 		return;	
 	}
-	
+}
 
+
+void write_voronoi(voronoi* voronoi, FILE* fp) {
+	list* seeds = voronoi->seeds;
+
+	fprintf(fp,"%s %d\n","Semillas:",seeds->size);
+	
+	item* tmp;
+	for(tmp = seeds->head; tmp != NULL; tmp = tmp->right) {
+		vertex* seed = tmp->element;
+		fprintf(fp,"%f %f\n", seed->x, seed->y);
+	}
+	
+	list* half_edges = voronoi->diagram->half_edge;
+	
+	fprintf(fp,"%s %d\n","Aristas:",half_edges->size);
+	for(tmp = half_edges->head; tmp != NULL; tmp = tmp->right) {
+		half_edge* he = tmp->element;
+		fprintf(fp,"%f %f %f %f\n", he->first->x, he->first->y, he->last->x,
+				he->last->y);
+	}
+}
+
+voronoi* process_incremental(double width, double height, list* vertices) 
+{
+	if (vertices == NULL)
+		return;
+
+
+	FILE * fp;
+
+	fp = fopen ("salida.txt", "w");
+	
+	voronoi* voronoi = init_voronoi_diagram(width, height);
+	
+	write_voronoi(voronoi, fp);
+
+	item* tmp;
+	for(tmp = vertices->head; tmp != NULL; tmp = tmp->right) {
+		vertex* vertex = tmp->element;
+		
+		voronoi_incremental(voronoi, vertex);
+		write_voronoi(voronoi, fp);
+
+		while(steps_voronoi(voronoi)) {
+			voronoi_incremental(voronoi, NULL);
+
+			write_voronoi(voronoi, fp);
+		}
+	}	
+
+	fclose(fp);
+
+	return voronoi;
 }

@@ -107,6 +107,8 @@ dcel* construct_bounded_box(double width, double height)
 	d->incident_face = f2;
 	d_1->incident_face = f1;
 
+	f2->outer_component = a;
+
 	/** Inicializamos la DCEL */
 	dcel* bounded_box = init_dcel();
 	

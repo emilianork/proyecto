@@ -9,8 +9,18 @@
 line* perpendicular_bisector(vertex* a, vertex* b)
 {
 
-	if (a == NULL || b == NULL)
-		return NULL;
+	if (a == NULL || b == NULL) {
+		
+		if (a != NULL)
+			printf("a = (%f,%f)\n", a->x, a->y);
+
+		if (b != NULL)
+			printf("b = (%f,%f)\n", b->x, b->y);
+
+		printf("perpendicular_bisector(), recibio nulo");
+		exit(EXIT_FAILURE);
+		   
+	}
 		
 
 	double x1 = a->x;
