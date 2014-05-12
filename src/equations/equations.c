@@ -1,3 +1,8 @@
+/**
+ * Author: José Emiliano Cabrera Blancas (jemiliano.cabrera@gmail.com)
+ * 
+ */
+
 #include "equations/equations.h"
 
 #include "types/types.h"

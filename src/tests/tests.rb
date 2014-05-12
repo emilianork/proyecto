@@ -4,7 +4,6 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "list_tests"))
-require File.expand_path(File.join(File.dirname(__FILE__), "rb_tree_tests"))
 require File.expand_path(File.join(File.dirname(__FILE__), "points_tests"))
 require File.expand_path(File.join(File.dirname(__FILE__), "half_edge_tests"))
 require File.expand_path(File.join(File.dirname(__FILE__), "voronoi_tests"))

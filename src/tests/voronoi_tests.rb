@@ -23,8 +23,6 @@ module Test
           Algorithms.voronoi_incremental(voronoi,nil)
         end
       end
-      
-      puts "Aritas_RUBY"
 
       c_half_edges = List.create_copy_list(voronoi[:diagram][:half_edge])
 
@@ -38,8 +36,6 @@ module Test
         
         ruby_edge << [edge[:first][:x].round(6), edge[:first][:y].round(6)]
         ruby_edge << [edge[:last][:x].round(6), edge[:last][:y].round(6)]
-        
-        p ruby_edge
 
         half_edge << ruby_edge
       end

@@ -17,23 +17,14 @@
 int main(void)
 {			  
 
-	//[26.0, 38.0], [215.0, 115.0], [122.0, 60.0], [66.0, 81.0],
 
-	//10.000000 362.000000
-	//309.000000 116.000000
-	//103.000000 67.000000
-	//87.000000 194.000000
-	//277.000000 126.000000
-	//309.000000 349.000000
-
-	//299.0, 193.0
-	//64.0,  58.0
-	//40.0,  267.0
-	//391.0, 87.0
-	//218.0, 374.0,
-	//284.0, 268.0
-	//270.0, 226.
-
+	/**
+	 * Codigo de ejemplo:
+	 * 1.  Genero las semillas y las guardo en una lista.
+	 * 2.  La funcion process_incremental calcula el diagrama de voronoi.
+	 * 3.  La salida se escribe en src/salida.txt o la pueden imprimir en 
+	 *     pantalla.
+	 */
 	vertex* A = init_point(50.0, 100.0, "\0");
 	vertex* B = init_point(350.0, 100.0,  "\0");
 	vertex* C = init_point(200.0, 100.0, "\0");

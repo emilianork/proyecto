@@ -24,8 +24,7 @@
  */
 struct dcel {
 	/** 
-	 * Registro de las caras, vertices y aristas guardadas en arboles 
-	 * rojo negros 
+	 * Registro de las caras, vertices y aristas guardadas en listas.
 	*/
 	list* face;
 	list* vertex;
@@ -102,10 +101,21 @@ list* incident_f_to_f(face* face);
  */
 list* incident_he_to_f(face* face);
 
+/**
+ * Dado que una cara del diagrama de voronoi es convexa, podemos decir en tiempo
+ * lineal si el punto que se le pase esta contenido en la cara que se le pase.
+ */
 int contain_vertex(face* face, vertex* vertex);
 
+/**
+ * Buscamos en la DCEL si un vertice dado esta contenido o no en la DCEL.
+ */
 vertex* search_vertex(dcel* dcel, vertex* vertex);
 
+/**
+ * Funcion que genera nombres aleatorio para las caras, puesto que su unico
+ * unico identificador es este.
+ */
 void rand_str(char *dest, int length);
 
 #endif
