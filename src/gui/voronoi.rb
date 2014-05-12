@@ -42,7 +42,7 @@ def setup
     List.push_back(list, point)
   end
 
-  Algorithms.process_incremental(width, height, list)
+  #Algorithms.process_incremental(width, height, list)
 
   read
 
@@ -96,7 +96,7 @@ end
 def read()
 
   @process = []
-  f = File.open("salida.txt", "r")
+  f = File.open("salida2.txt", "r")
 
   if (f.eof?)
     puts "C todavía no termino de escribir el archivo"
