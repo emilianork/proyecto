@@ -34,15 +34,17 @@ int main(void)
 	//284.0, 268.0
 	//270.0, 226.
 
-	vertex* A = init_point(50.0, 100.0, "\0");
-	vertex* B = init_point(350.0, 100.0,  "\0");
-	vertex* C = init_point(200.0, 100.0, "\0");
+	
+
+	vertex* A = init_point(141.0, 51.0, "\0");
+	vertex* B = init_point(372.0, 144.0, "\0");
+	vertex* C = init_point(35.0, 275.0, "\0");
 						   
 	list* vertices = init_double_linked_list(POINT);
 	
 	push_back(vertices, A);
 	push_back(vertices, B);
-	push_back(vertices,C);
+	push_back(vertices, C);
 	
 	voronoi* voronoi = process_incremental(400.0,400.0, vertices);
 

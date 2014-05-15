@@ -37,7 +37,7 @@ int steps_voronoi(voronoi* voronoi);
 
 void voronoi_incremental(voronoi* voronoi, vertex* vertex);
 
-void add_half_edge_voronoi(up_data* data);
+void upgrade_voronoi_diagram(up_data* data);
 
 voronoi* process_incremental(double width, double height, list* vertices);
 #endif

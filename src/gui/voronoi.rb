@@ -15,15 +15,14 @@ def setup
 
   # Genera un conjunto random de puntos dentro de la caja.
 
-  rand_size = 7
+  rand_size = 3
   random_vertex = []
 
   rand_size.times.each do
     random_vertex << [rand(width).to_f, rand(height).to_f]
   end
   
- # random_vertex = [[50.0, 100.0], [350.0, 100.0], [201.0,100.0]]
-
+  random_vertex = [[141.0, 51.0], [372.0, 144.0], [35.0, 275.0]]
 
   puts "Puntos"
   p random_vertex
@@ -42,7 +41,7 @@ def setup
     List.push_back(list, point)
   end
 
-  #Algorithms.process_incremental(width, height, list)
+  Algorithms.process_incremental(width, height, list)
 
   read
 
@@ -96,7 +95,7 @@ end
 def read()
 
   @process = []
-  f = File.open("salida2.txt", "r")
+  f = File.open("salida.txt", "r")
 
   if (f.eof?)
     puts "C todavía no termino de escribir el archivo"

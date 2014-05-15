@@ -1,0 +1,48 @@
+Voronoi Inremental:
+
+1. Si me pasan un vertice:
+   1.1 Veo la cara donde cae y la encolo en voronoi->processing
+   1.2 Agrego al vertice a la lista voronoi->seeds.
+
+2. Si la lista voronoi->processing no esta vacia:
+
+   2.1 Si el conjunto de semillas tiene tamaño 1.
+   	   2.1.1 A la unica semilla la pongo como el centreo de la cara interior de la
+	   		 DCEL.
+
+   2.2 Proceso la siguiente cara de la cola:
+   	   2.2.1 Obtengo las dos aristas de intersecion, junto con su interseccion.
+	  
+	   2.2.2 Si la cara que estoy procesando contiene a la semilla que estoy
+	   		 procesando, entonces las dos intersecciones van a ser nuevas.
+
+	   2.2.3 Si la cara que estoy procesando NO contiene a la semilla que estoy
+	         procesando, entonces al menos una interseccion se repite.
+			 
+	   2.2.4 Actualizo la DCEL.
+
+   2.3 Si la lista voronoi->processing queda vacia, entonces marco a la ultima
+       semilla como procesada.
+
+Actualización de la DCEL:
+
+1- Si no contiene intersecciones que ya exista (Es la primera cara que se procesa).
+  
+  1.1 Creo la nueva arista a partir de las dos intersecciones.
+  
+  1.2 Creo la nueva cara y pongo como centro al punto center.
+
+  1.3 Si la nueva cara contiene al menos una arista distinta a la que cree y que 
+  	  no sea adyacente a la cara exterior.
+	  1.3.1 Elimino a la arista y encolo a la cara.
+
+  1.4 Si no se cumple 1.3 entonces.
+  	  1.4.1 Encolo a las caras que sean adyacentes a la nueva arista y NO sean la
+	  		cara exterior.
+
+2. Si alguna interseccion se repite.
+   2.1 Creo una nueva cara apartir de las dos aristas a y b.
+   2.2 Elimino las aristas que tengan las dos caras adyacentes.
+       center->face y new_face.
+   2.3 Encolo las caras adyacentes a las intersecciones que no se repitan y que no
+       sean la cara exterior.

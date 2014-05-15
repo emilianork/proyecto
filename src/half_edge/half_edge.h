@@ -60,9 +60,6 @@ half_edge* init_half_edge(vertex* first, vertex* last, const char* name);
 /** Destruye el segmento liberando su memoria. */
 void destroy_half_edge(half_edge* half_edge);
 
-/** Destruye el segmento liberando su memoria y la de los puntos que contiene. */
-void destroy_half_edge_with_points(half_edge* half_edge);
-
 /** Crea una copia del segmento y sus puntos. */
 half_edge* copy_half_edge(half_edge* half_edge);
 

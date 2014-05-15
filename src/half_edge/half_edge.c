@@ -49,16 +49,6 @@ void destroy_half_edge(half_edge* half_edge)
 	free(half_edge);
 }
 
-void destroy_half_edge_with_points(half_edge* half_edge)
-{
-	
-	
-	destroy_point(half_edge->first);
-	destroy_point(half_edge->last);
-
-	free(half_edge);
-}
-
 vertex* he_intersection(half_edge* a, half_edge* b)
 {
 	double x1, y1, x2, y2, x3, y3, x4, y4;

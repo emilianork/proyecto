@@ -31,7 +31,6 @@ module HalfEdge
 
   attach_function :init_half_edge, [Points::Point.by_ref, Points::Point.by_ref, :string], HalfEdge.by_ref
   attach_function :destroy_half_edge, [HalfEdge.by_ref], :void
-  attach_function :destroy_half_edge_with_points, [HalfEdge.by_ref], :void
 
   attach_function :he_intersection, [HalfEdge.by_ref, HalfEdge.by_ref], Points::Point.by_ref
 
