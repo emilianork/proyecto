@@ -59,7 +59,7 @@ void cut_half_edge(half_edge* a, vertex* intersection_a, dcel* diagram)
 	
 	a->first = intersection_a;
 	a->twin->last = intersection_a;
-	
+
 	tmp1->next = a;
 	tmp2->next = a->twin->next;
 	
@@ -586,10 +586,22 @@ void voronoi_incremental(voronoi* voronoi, vertex* vertex)
 	item* tmp;
 	for (tmp = incident_half_edge->head; tmp != NULL; tmp = tmp->right) {
 		
+		half_edge* to_print = tmp->element;
+		printf("INTERSECTION: (%f,%f),(%f,%f)\n", to_print->first->x, 
+			   to_print->first->y, to_print->last->x, to_print->last->y);
+
 		struct point *intersection;
 		intersection = intersection_segments(bisector, tmp->element);
 		
+
+		//to_print = tmp->element;
+		printf("INTERSECTION: (%f,%f),(%f,%f)\n", to_print->first->x,
+			   to_print->first->y, to_print->last->x, to_print->last->y);
+		
+		
+
 		if (intersection != NULL) {
+
 			if (he_incident_1 == NULL) {
 				he_incident_1 = tmp->element;
 				intersection_1 = intersection;
@@ -604,17 +616,6 @@ void voronoi_incremental(voronoi* voronoi, vertex* vertex)
 		printf("No encontre intersecciones, eso no debio pasar.\n");
 		exit(EXIT_FAILURE);
 	}
-
-	/**Imprimos estadisticas.**/
-	printf("intersection_a: (%f,%f)\n",intersection_1->x, intersection_1->y);
-	printf("a: (%f,%f), (%f,%f)\n", he_incident_1->first->x,
-		   he_incident_1->first->y, he_incident_1->last->x,
-		   he_incident_1->last->y);
-	printf("intersection_b: (%f,%f)\n", intersection_2->x, intersection_2->y);
-	printf("b: (%f,%f), (%f,%f)\n", he_incident_2->first->x,
-		   he_incident_2->first->y, he_incident_2->last->x,
-		   he_incident_2->last->y);
-	/**Termine de imprimir*/
 
 	/**
 	 * 2.2.2 Si la cara que estoy procesando contiene a la semilla que 
@@ -674,6 +675,18 @@ void upgrade_voronoi_diagram(up_data* data)
 
 	voronoi* voronoi = data->voronoi;
 
+	/**Imprimos estadisticas.**/
+	printf("intersection_a: (%f,%f)\n",intersection_a->x, intersection_a->y);
+	printf("a: (%f,%f), (%f,%f)\n", a->first->x,
+		   a->first->y, a->last->x,
+		   a->last->y);
+	printf("intersection_b: (%f,%f)\n", intersection_b->x, intersection_b->y);
+	printf("b: (%f,%f), (%f,%f)\n", b->first->x,
+		   b->first->y, b->last->x,
+		   b->last->y);
+	/**Termine de imprimir*/
+	
+
 	/**
 	 * 1. Si no contiene intersecciónes que se repitan.
 	 *    (Es la primera cara que se procesa.)
@@ -694,6 +707,24 @@ void upgrade_voronoi_diagram(up_data* data)
 			
 			cut_half_edge(a,intersection_a, diagram);
 			a = a->prev;
+
+			
+			printf("CARA QUE ESTOY DEJANDO a:\n");
+			list* incident_list = incident_he_to_f(a->twin->incident_face);
+			
+			item* temporal;
+			for(temporal = incident_list->head; temporal != NULL; 
+				temporal = temporal->right) {
+				
+				half_edge* wtf = temporal->element;
+
+				printf("(%f,%f),(%f,%f)\n", wtf->first->x, wtf->first->y,
+					   wtf->last->x, wtf->last->y);
+				
+			}
+
+			printf("Termine CARA QUE ESTOY DEJANDO a\n");
+
 		} else {
 			
 			if (point_equals(a->first, intersection_a))
@@ -713,15 +744,46 @@ void upgrade_voronoi_diagram(up_data* data)
 			
 			cut_half_edge(b,intersection_b, diagram);
 			b = b->prev;
+
+
+			printf("CARA QUE ESTOY DEJANDO b :\n");
+			list* incident_list = incident_he_to_f(b->twin->incident_face);
+			
+			item* temporal;
+			for(temporal = incident_list->head; temporal != NULL; 
+				temporal = temporal->right) {
+				
+				half_edge* wtf = temporal->element;
+
+				printf("(%f,%f),(%f,%f)\n", wtf->first->x, wtf->first->y,
+					   wtf->last->x, wtf->last->y);
+				
+			}
+
+			printf("Termine CARA QUE ESTOY DEJANDO b\n");
+
+
+
 		} else {
+
+			printf("b equals to b->first: (%f,%f) != (%f,%f)\n", 
+				   intersection_b->x, intersection_b->y,
+				   b->first->x, b->first->y);
+
+			printf("b equals to b->last: (%f,%f) != (%f,%f)\n", 
+				   intersection_b->x, intersection_b->y,
+				   b->last->x, b->last->y);
+
+			
+
 			if (point_equals(b->first, intersection_b))
 				b = b->prev;
 			
 			destroy_point(intersection_b);
 		}
 
-		intersection_a = a->last;
-		intersection_b = b->last;
+		//intersection_a = a->last;
+		//intersection_b = b->last;
 		
 		/**
 		 * 1.1 Creo la nueva arista a partir de las dos interseciones.

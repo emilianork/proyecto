@@ -68,7 +68,7 @@ def compile_c
     exit (0) if not((system(command)))
   end
   command = "#{@cc} #{@debug} -o #{@main[0..-3]} #{objs.join(" ")}" +
-    " #{@cflags} -lm"
+    " #{@cflags}"
   puts "\t"+ command
   puts "No compilo de forma correcta" if not(system(command))
 end	

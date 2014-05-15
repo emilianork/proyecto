@@ -15,14 +15,14 @@ def setup
 
   # Genera un conjunto random de puntos dentro de la caja.
 
-  rand_size = 3
+  rand_size = 4
   random_vertex = []
 
   rand_size.times.each do
     random_vertex << [rand(width).to_f, rand(height).to_f]
   end
-  
-  random_vertex = [[141.0, 51.0], [372.0, 144.0], [35.0, 275.0]]
+
+  random_vertex = [[271.0,398.0],[39.0,234.0],[107.0,177.0]]#,[180.0,158.0]]
 
   puts "Puntos"
   p random_vertex

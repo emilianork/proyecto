@@ -49,6 +49,10 @@ line* perpendicular_bisector(vertex* a, vertex* b)
 
 vertex* intersection_segments(line* line, half_edge* half_edge)
 {
+	printf("INTERSECTION: (%f,%f),(%f,%f)\n", half_edge->first->x, half_edge->first->y,
+		   half_edge->last->x, half_edge->last->y);
+
+	
 	double x1 = half_edge->first->x;
 	double y1 = half_edge->first->y;
 
@@ -89,6 +93,9 @@ vertex* intersection_segments(line* line, half_edge* half_edge)
 				 line->b*(line->m - second_line->m)) / divisor;
 		}
 		
+		printf("INTERSECTION 1: (%f,%f),(%f,%f)\n", half_edge->first->x, half_edge->first->y,
+		   half_edge->last->x, half_edge->last->y);
+
 		return init_point(x,y,"\0");
 	}
 		
