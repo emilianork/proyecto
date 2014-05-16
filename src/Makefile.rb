@@ -21,11 +21,11 @@
 # [ ..., "algorithms/heap.o"  ,...]
 @objs = ["double_linked_list/double_linked_list.o","points/2d_points.o"] + 
   ["half_edge/half_edge.o","equations/equations.o" ,"face/face.o"] + 
-  ["red_black_tree/rb_tree.o", "dcel/dcel.o","voronoi/voronoi.o"] + 
+  ["dcel/dcel.o","voronoi/voronoi.o"] + 
   [ "algorithms/algorithms.o", "tests/voronoi_tests.o"]
 
 @cflags = "-I."
-@debug = "-g"
+@debug = "-Wall -Werror -g"
 @main = "main.o"
 
 #Variables de compile

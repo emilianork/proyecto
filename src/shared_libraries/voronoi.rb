@@ -9,7 +9,6 @@ require File.expand_path(File.join(File.dirname(__FILE__),"half_edge"))
 require File.expand_path(File.join(File.dirname(__FILE__),"face"))
 
 require File.expand_path(File.join(File.dirname(__FILE__),"double_linked_list"))
-require File.expand_path(File.join(File.dirname(__FILE__), "rb_trees"))
 require File.expand_path(File.join(File.dirname(__FILE__), "dcel"))
 
 #

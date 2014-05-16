@@ -4,7 +4,6 @@
 #
 
 require File.expand_path(File.join(File.dirname(__FILE__), "list_tests"))
-require File.expand_path(File.join(File.dirname(__FILE__), "rb_tree_tests"))
 require File.expand_path(File.join(File.dirname(__FILE__), "points_tests"))
 require File.expand_path(File.join(File.dirname(__FILE__), "half_edge_tests"))
 require File.expand_path(File.join(File.dirname(__FILE__), "voronoi_tests"))
@@ -45,7 +44,7 @@ module Test
   def self.run
     puts "Corriendo Tests:\n\n"
     @@test_number = 0
-    total_tests = 8
+    total_tests = 10
     
     assert("2d_points.h: create_copy_point",TestPoints.create_copy_point)
     puts ""
@@ -65,7 +64,11 @@ module Test
            TestList.pick)
     puts ""
     
-    assert("voronoi", TestVoronoi.simple)
+    assert("algorithms.h: Voronoi de solo 2 puntos", TestVoronoi.simple_case)
+    assert("algorithms.h: Voronoi de 3 puntos del caso degenerado",
+           TestVoronoi.degenerate_case)
+    assert("algorithms.h: Voronoi de 7 puntos aleatorios",
+           TestVoronoi.general_case)
 
     puts "\nTests aprobados: #{@@test_number}"
     puts "Tests fallidos: #{total_tests - @@test_number}"

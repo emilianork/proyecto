@@ -32,8 +32,6 @@ void merge_half_edge(half_edge* half_edge, dcel* diagram)
 	
 	half_edge->last = tmp1->last;
 
-	printf("LAST: (%f,%f)\n", tmp1->last->x, tmp1->last->y);
-
 	half_edge->twin->first = tmp2->first;
 
 	half_edge->last->incident_edge = half_edge->next;
@@ -69,8 +67,8 @@ void cut_half_edge(half_edge* a, vertex* intersection_a, dcel* diagram)
 	tmp1->twin = tmp2;
 	tmp2->twin = tmp1;
 	
-	tmp1->incident_face = a->incident_face;
-	tmp2->incident_face = a->twin->incident_face;
+	tmp1->incident_face = (face*)a->incident_face;
+	tmp2->incident_face = (face*)a->twin->incident_face;
 	
 	tmp1->prev->next = tmp1;
 	tmp2->next->prev = tmp2;
@@ -78,8 +76,8 @@ void cut_half_edge(half_edge* a, vertex* intersection_a, dcel* diagram)
 	tmp2->prev->next = tmp2;
 	tmp1->next->prev = tmp1;
 	
-	intersection_a->incident_edge = a;
-	tmp1->first->incident_edge = tmp1;
+	intersection_a->incident_edge = (half_edge*)a;
+	tmp1->first->incident_edge = (half_edge*)tmp1;
 	
 	dcel_insert_half_edge(diagram, tmp1);
 	dcel_insert_half_edge(diagram, tmp2);
@@ -90,10 +88,6 @@ void cut_half_edge(half_edge* a, vertex* intersection_a, dcel* diagram)
 face* add_new_face(half_edge* a, half_edge* b, vertex* seed,
 						vertex* face_center, dcel* diagram) 
 {
-
-	printf("a (%f,%f) (%f,%f)\n", a->first->x, a->first->y, a->last->x, a->last->y);
-	printf("b (%f,%f) (%f,%f)\n", b->first->x, b->first->y, b->last->x, b->last->y);
-	
 	half_edge *tmp1, *tmp2;
 	tmp1 = init_half_edge(b->last, a->last, "\0");
 	tmp2 = init_half_edge(a->last, b->last, "\0");
@@ -107,8 +101,8 @@ face* add_new_face(half_edge* a, half_edge* b, vertex* seed,
 	tmp1->prev = b;
 	tmp2->prev = a;
 	
-	tmp1->incident_face = b->incident_face;
-	tmp2->incident_face = a->incident_face;
+	tmp1->incident_face = (face*)b->incident_face;
+	tmp2->incident_face = (face*)a->incident_face;
 
 	dcel_insert_half_edge(diagram, tmp1);
 	dcel_insert_half_edge(diagram, tmp2);
@@ -153,27 +147,6 @@ face* add_new_face(half_edge* a, half_edge* b, vertex* seed,
 			seed->face = aux_face;
 		}
 
-		/**Imprimo estadisticas*/
-		printf("New_face:\n");
-		
-		list* tmp_list = incident_he_to_f(aux_face);
-		item* temp;
-		for(temp = tmp_list->head; temp != NULL; temp = temp->right) {
-			half_edge* temporal = temp->element;
-			printf("(%f,%f) (%f,%f)\n",temporal->first->x, temporal->first->y, temporal->last->x, temporal->last->y);
-		}
-		printf("Termine new face\n");
-
-		printf("Old_Face:\n");
-		tmp_list = incident_he_to_f(new_face);
-		for(temp = tmp_list->head; temp != NULL; temp = temp->right) {
-			half_edge* temporal = temp->element;
-			printf("(%f,%f) (%f,%f)\n",temporal->first->x, temporal->first->y, temporal->last->x, temporal->last->y);
-		}
-		printf("Termine old face1\n");
-			
-			
-		/**Termino de imprimir estadisticas*/
 		return aux_face;
 	} else {
 		
@@ -181,28 +154,6 @@ face* add_new_face(half_edge* a, half_edge* b, vertex* seed,
 			new_face->center = seed;
 			seed->face = new_face;
 		}
-
-		/**Imprimo estadisticas*/
-		printf("New_face:\n");
-		
-		list* tmp_list = incident_he_to_f(new_face);
-		item* temp;
-		for(temp = tmp_list->head; temp != NULL; temp = temp->right) {
-			half_edge* temporal = temp->element;
-			printf("(%f,%f) (%f,%f)\n",temporal->first->x, temporal->first->y, temporal->last->x, temporal->last->y);
-		}
-		printf("Termine new face\n");
-
-		printf("Old_Face:\n");
-		tmp_list = incident_he_to_f(aux_face);
-		for(temp = tmp_list->head; temp != NULL; temp = temp->right) {
-			half_edge* temporal = temp->element;
-			printf("(%f,%f) (%f,%f)\n",temporal->first->x, temporal->first->y, temporal->last->x, temporal->last->y);
-		}
-		printf("Termine old face2\n");
-			
-			
-		/**Termino de imprimir estadisticas*/
 
 		return new_face;
 	}
@@ -221,34 +172,6 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 		exit(EXIT_FAILURE);
 	}
 
-	list* ori_he = incident_he_to_f(original_face);
-	list* new_he = incident_he_to_f(new_face);
-
-	item* temporal;
-
-	printf("Merging_Faces\n");
-
-	printf("Original_Face:\n");
-
-	for (temporal = ori_he->head; temporal != NULL; temporal = temporal->right) {
-		half_edge* tmp_he = temporal->element;
-
-		printf("(%f,%f) (%f,%f)\n", tmp_he->first->x, tmp_he->first->y,
-			   tmp_he->last->x, tmp_he->last->y);
-	}
-
-	printf("Termine original_face\n");
-
-	printf("New_Face:\n");
-	for (temporal = new_he->head; temporal != NULL; temporal = temporal->right) {
-		half_edge* tmp_he = temporal->element;
-
-		printf("(%f,%f) (%f,%f)\n", tmp_he->first->x, tmp_he->first->y,
-			   tmp_he->last->x, tmp_he->last->y);
-	}
-
-	printf("Termine new_face.\n");
-
 	list* incident_he = incident_he_to_f(original_face);
 	item* tmp_list;
 	
@@ -262,39 +185,34 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 
 		half_edge* tmp_he = tmp_list->element;
 
-		if (tmp_he->twin->incident_face != new_face) {
+		if ((face*)tmp_he->twin->incident_face != new_face) {
 			original_face->outer_component = tmp_he;
 			break;
 		}
 	}
-
-	printf("original_face->outer_component, (%f,%f) (%f,%f)\n", original_face->outer_component->first->x, original_face->outer_component->first->y,
-		   original_face->outer_component->last->x, original_face->outer_component->last->y);
 
 	/**
 	 * Ahora que ya compusimos el apuntador outer_component buscamos la lista
 	 * de half_edge para eliminar.
 	 */
 	
-	list* to_destroy = init_double_linked_list(HALF_EDGE);
-	
+	list* to_destroy = init_double_linked_list(HALF_EDGE);	
 
 	for(tmp_list = incident_he->head; tmp_list != NULL; 
 		tmp_list = tmp_list->right) {
 		
 		half_edge* tmp_he = tmp_list->element;
 		
-		if (tmp_he->twin->incident_face == new_face) {
-			
+		if ((face*)tmp_he->twin->incident_face == new_face)
 			push_back(to_destroy, tmp_he);
-
-		} else {
-
+		
+		else
+			
 			if (to_destroy->size >= 1)
 				break;
-		}
+		
 	}
-
+	
 	half_edge *tmp1, *tmp2, *tmp3, *tmp4;
 	
 	tmp1 = to_destroy->head->element;
@@ -312,21 +230,11 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 	tmp4->last->incident_edge = tmp4->next;
 	tmp3->last->incident_edge = tmp3->next;
 
-	printf("original_face->outer_component, (%f,%f) (%f,%f)\n", original_face->outer_component->first->x, original_face->outer_component->first->y,
-		   original_face->outer_component->last->x, original_face->outer_component->last->y);
-	
-
-	printf("tmp4 (%f,%f) (%f,%f)\n", tmp4->first->x, tmp4->first->y, tmp4->last->x, tmp4->last->y);
-	printf("tmp3 (%f,%f) (%f,%f)\n", tmp3->first->x, tmp3->first->y, tmp3->last->x, tmp3->last->y);
-	
-
 	/** Primero borro los puntos que ya no vamos a usar.*/
 	for(tmp_list = to_destroy->head; tmp_list != NULL; 
 		tmp_list = tmp_list->right) {
 		
 		half_edge *tmp_he = tmp_list->element;
-
-		printf("Arista por destruir: (%f,%f) (%f,%f)\n", tmp_he->first->x, tmp_he->first->y, tmp_he->last->x, tmp_he->last->y);
 
 		vertex *tmp_first = tmp_he->first;
 		vertex *tmp_last = tmp_he->last;
@@ -334,20 +242,16 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 		if (!point_equals(tmp_first, tmp4->last) &&
 			!point_equals(tmp_first, tmp3->last)) {
 			
-			printf("ACA NO PASO 1\n");
-			
 			dcel_pop_vertex(diagram,tmp_first);
-			destroy_point(tmp_first);
+			//destroy_point(tmp_first);
 
 		}
 
 		if (!point_equals(tmp_last, tmp4->last) &&
 			!point_equals(tmp_last, tmp3->last)) {
-			
-			printf("ACA NO PASO 2\n");
-			
+						
 			dcel_pop_vertex(diagram,tmp_last);
-			destroy_point(tmp_last);
+			//destroy_point(tmp_last);
 		}
 	}
 	
@@ -357,8 +261,6 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 		tmp_list = tmp_list->right) {
 		
 		half_edge* tmp_he = tmp_list->element;
-
-		printf("Arista destruyendose: (%f,%f) (%f,%f)\n", tmp_he->first->x, tmp_he->first->y, tmp_he->last->x, tmp_he->last->y);
 
 		dcel_pop_half_edge(diagram, tmp_he->twin);
 		dcel_pop_half_edge(diagram, tmp_he);
@@ -370,31 +272,16 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 
 	tmp1 = original_face->outer_component;
 
-	printf("tmp1 (%f,%f) (%f,%f)\n", tmp1->first->x, tmp1->first->y, tmp1->last->x, tmp1->last->y);
-
 	do {
 
 		tmp1->incident_face = original_face;
 		tmp1 = tmp1->next;
 		
-		printf("tmp1 (%f,%f) (%f,%f)\n", tmp1->first->x, tmp1->first->y, tmp1->last->x, tmp1->last->y);
-
 	} while(tmp1 != original_face->outer_component);
 
 	dcel_pop_face(diagram,new_face);
 	destroy_face(new_face);
 		
-	ori_he = incident_he_to_f(original_face);
-	printf("original_face 1:\n");
-	for (temporal = ori_he->head; temporal != NULL; temporal = temporal->right) {
-		half_edge* tmp_he = temporal->element;
-		
-		printf("(%f,%f) (%f,%f)\n", tmp_he->first->x, tmp_he->first->y,
-			   tmp_he->last->x, tmp_he->last->y);
-	}
-
-	printf("Finish 1\n");
-
 	/**
 	 * Elimino los vertices que ya no son necesarios.
 	 */
@@ -406,9 +293,6 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 	if ((point_equals_x(first,second) && point_equals_x(first,third)) ||
 		(point_equals_y(first,second) && point_equals_y(first,third))) {
 		
-
-		printf("tmp3 (%f,%f) (%f,%f)\n", tmp3->first->x, tmp3->first->y, tmp3->last->x, tmp3->last->y);
-
 		merge_half_edge(tmp3, diagram);
 	}
 
@@ -419,23 +303,8 @@ void merge_faces(face* original_face, face* new_face, dcel* diagram)
 	if ((point_equals_x(first,second) && point_equals_x(first,third)) ||
 		(point_equals_y(first,second) && point_equals_y(first,third))) {
 		
-		printf("tmp4 (%f,%f) (%f,%f)\n", tmp4->first->x, tmp4->first->y, tmp4->last->x, tmp4->last->y);
-
 		merge_half_edge(tmp4, diagram);
 	}
-	
-	ori_he = incident_he_to_f(original_face);
-	printf("original_face 2:\n");
-	for (temporal = ori_he->head; temporal != NULL; temporal = temporal->right) {
-		half_edge* tmp_he = temporal->element;
-		
-		printf("(%f,%f) (%f,%f)\n", tmp_he->first->x, tmp_he->first->y,
-			   tmp_he->last->x, tmp_he->last->y);
-	}
-	
-	printf("Finish 2\n");
-
-
 }
 
 up_data* init_upgrade_data(void)
@@ -496,10 +365,12 @@ void voronoi_incremental(voronoi* voronoi, vertex* vertex)
 		/** Itero las caras hasta dar con la que contiene al punto vertex. */
 		for (tmp = faces->head; tmp != NULL; tmp = tmp->right) {
 			
-			/** Descarto la cara exterior. */
-			if ( ((struct face*)tmp->element)->outer_component !=  NULL) {
+			struct face* tmp_face = tmp->element;
 
-				if (contain_vertex(tmp->element, vertex)) {
+			/** Descarto la cara exterior. */
+			if ( tmp_face->outer_component !=  NULL ) {
+
+				if (contain_vertex(tmp_face, vertex)) {
 					face = tmp->element;
 					break;
 				}
@@ -533,27 +404,10 @@ void voronoi_incremental(voronoi* voronoi, vertex* vertex)
 	struct point* seed = voronoi->seeds->tail->element;
 	face* face = pop_front(voronoi->processing);
 
-	/** Comienzo a imprimir datos.*/
-	printf("\nSeed nuevo: (%f,%f)\n", seed->x, seed->y);
-	printf("CARA QUE SE ESTA PROCESANDO:\n");
-	
-	list* half_edges = incident_he_to_f(face);
-	
-	item* tmp_list;
-	for(tmp_list = half_edges->head; tmp_list != NULL; tmp_list = tmp_list->right) {
-		half_edge* he = tmp_list->element;
-		printf("(%f,%f),(%f,%f)\n",he->first->x, he->first->y, he->last->x,
-			   he->last->y);
-	}
-	printf("TERMINE\n");
-	/** Termino de imprimir datos. */
-	
 	/**
 	 * 2.1 Si el cojunto de semillas tiene tamaño 1.
 	 */
 	if (voronoi->seeds->size == 1) {
-
-		printf("SOLO UN VEZ SEEDS ES DE TAMAÑO 1\n");
 			
 		/**
 		 * 2.1.1 A la unica semilla la pongo como centro de la
@@ -586,20 +440,11 @@ void voronoi_incremental(voronoi* voronoi, vertex* vertex)
 	item* tmp;
 	for (tmp = incident_half_edge->head; tmp != NULL; tmp = tmp->right) {
 		
-		half_edge* to_print = tmp->element;
-		printf("INTERSECTION: (%f,%f),(%f,%f)\n", to_print->first->x, 
-			   to_print->first->y, to_print->last->x, to_print->last->y);
+		half_edge* tmp_he = tmp->element;
+		struct point*intersection;
 
-		struct point *intersection;
-		intersection = intersection_segments(bisector, tmp->element);
+		intersection = intersection_segments(bisector, tmp_he);
 		
-
-		//to_print = tmp->element;
-		printf("INTERSECTION: (%f,%f),(%f,%f)\n", to_print->first->x,
-			   to_print->first->y, to_print->last->x, to_print->last->y);
-		
-		
-
 		if (intersection != NULL) {
 
 			if (he_incident_1 == NULL) {
@@ -675,18 +520,6 @@ void upgrade_voronoi_diagram(up_data* data)
 
 	voronoi* voronoi = data->voronoi;
 
-	/**Imprimos estadisticas.**/
-	printf("intersection_a: (%f,%f)\n",intersection_a->x, intersection_a->y);
-	printf("a: (%f,%f), (%f,%f)\n", a->first->x,
-		   a->first->y, a->last->x,
-		   a->last->y);
-	printf("intersection_b: (%f,%f)\n", intersection_b->x, intersection_b->y);
-	printf("b: (%f,%f), (%f,%f)\n", b->first->x,
-		   b->first->y, b->last->x,
-		   b->last->y);
-	/**Termine de imprimir*/
-	
-
 	/**
 	 * 1. Si no contiene intersecciónes que se repitan.
 	 *    (Es la primera cara que se procesa.)
@@ -707,24 +540,7 @@ void upgrade_voronoi_diagram(up_data* data)
 			
 			cut_half_edge(a,intersection_a, diagram);
 			a = a->prev;
-
 			
-			printf("CARA QUE ESTOY DEJANDO a:\n");
-			list* incident_list = incident_he_to_f(a->twin->incident_face);
-			
-			item* temporal;
-			for(temporal = incident_list->head; temporal != NULL; 
-				temporal = temporal->right) {
-				
-				half_edge* wtf = temporal->element;
-
-				printf("(%f,%f),(%f,%f)\n", wtf->first->x, wtf->first->y,
-					   wtf->last->x, wtf->last->y);
-				
-			}
-
-			printf("Termine CARA QUE ESTOY DEJANDO a\n");
-
 		} else {
 			
 			if (point_equals(a->first, intersection_a))
@@ -732,7 +548,7 @@ void upgrade_voronoi_diagram(up_data* data)
 			
 			destroy_point(intersection_a);
 		}
-
+		
 		if (!(point_equals(b->first, intersection_b) ||
 			  point_equals(b->last, intersection_b))) {
 
@@ -745,36 +561,7 @@ void upgrade_voronoi_diagram(up_data* data)
 			cut_half_edge(b,intersection_b, diagram);
 			b = b->prev;
 
-
-			printf("CARA QUE ESTOY DEJANDO b :\n");
-			list* incident_list = incident_he_to_f(b->twin->incident_face);
-			
-			item* temporal;
-			for(temporal = incident_list->head; temporal != NULL; 
-				temporal = temporal->right) {
-				
-				half_edge* wtf = temporal->element;
-
-				printf("(%f,%f),(%f,%f)\n", wtf->first->x, wtf->first->y,
-					   wtf->last->x, wtf->last->y);
-				
-			}
-
-			printf("Termine CARA QUE ESTOY DEJANDO b\n");
-
-
-
 		} else {
-
-			printf("b equals to b->first: (%f,%f) != (%f,%f)\n", 
-				   intersection_b->x, intersection_b->y,
-				   b->first->x, b->first->y);
-
-			printf("b equals to b->last: (%f,%f) != (%f,%f)\n", 
-				   intersection_b->x, intersection_b->y,
-				   b->last->x, b->last->y);
-
-			
 
 			if (point_equals(b->first, intersection_b))
 				b = b->prev;
@@ -782,16 +569,16 @@ void upgrade_voronoi_diagram(up_data* data)
 			destroy_point(intersection_b);
 		}
 
-		//intersection_a = a->last;
-		//intersection_b = b->last;
+		intersection_a = a->last;
+		intersection_b = b->last;
 		
 		/**
 		 * 1.1 Creo la nueva arista a partir de las dos interseciones.
 		 */
 		
-		face* current_face = b->incident_face;
+		vertex* current_face_center = ((face*)b->incident_face)->center;
 		vertex* current_seed = center;
-		face* new_face = add_new_face(a,b,current_seed,current_face->center,diagram);
+		face* new_face = add_new_face(a,b,current_seed,current_face_center,diagram);
 
 		/**
 		 *  1.3 Si la nueva cara contiene al menos una arista disinta a la que
@@ -807,7 +594,6 @@ void upgrade_voronoi_diagram(up_data* data)
 
 		int count = 0;
 		half_edge* non_adyacent_to_fe = NULL;
-
 		
 		if (tmp1->outer_component == NULL && tmp2->outer_component == NULL) {
 
@@ -882,7 +668,14 @@ void upgrade_voronoi_diagram(up_data* data)
 
 		vertex* tmp_v;
 
+
+		if (intersection_a == intersection_b) {
+			printf("Las intersecciones no pueden ser las mismas\n");
+			exit(EXIT_FAILURE);
+		}
+
 		tmp_v = search_vertex(diagram,intersection_a);
+		
 		if (tmp_v != NULL) {
 			
 			destroy_point(intersection_a);
@@ -894,9 +687,9 @@ void upgrade_voronoi_diagram(up_data* data)
 
 		tmp_v = search_vertex(diagram,intersection_b);
 		if (tmp_v != NULL) {
-			
+
 			destroy_point(intersection_b);
-			
+
 			intersection_b = tmp_v;
 			b_repeat = TRUE;
 			count++;
@@ -915,7 +708,8 @@ void upgrade_voronoi_diagram(up_data* data)
 			printf("LISTA DE VERTICES:\n");
 
 			item* temp;
-			for (temp = diagram->vertex->head; temp != NULL; temp = temp->right) {
+			for (temp = diagram->vertex->head; temp != NULL; 
+				 temp = temp->right) {
 				
 				vertex* tmp_ve = temp->element;
 				
@@ -938,15 +732,13 @@ void upgrade_voronoi_diagram(up_data* data)
 			a = a->prev;
 			
 		} else {
+
 			if (point_equals(a->first, intersection_a)) {
 				a = a->prev;
 
 			}
 			
-			destroy_point(intersection_a);
 		}
-
-		intersection_a = a->last;
 
 		if (!b_repeat) {
 
@@ -955,13 +747,10 @@ void upgrade_voronoi_diagram(up_data* data)
 			cut_half_edge(b,intersection_b, diagram);
 			b = b->prev;
 		} else {
+
 			if (point_equals(b->first, intersection_b))
 				b = b->prev;
-			
-			destroy_point(intersection_b);
 		}
-
-		intersection_b = b->last;
 
 		/**
 		 * 2.1 Creo una nueva cara apartir de las dos aristas a y b.
@@ -975,22 +764,6 @@ void upgrade_voronoi_diagram(up_data* data)
 		 */
 
 		merge_faces(center->face, new_face, diagram);
-		
-		/** Imprimo estadisticas**/
-		list* cara_resultante = incident_he_to_f(center->face);
-		
-		item* temporal;
-
-		printf("Merge_Face:\n");
-
-		for (temporal = cara_resultante->head; temporal != NULL; 
-			 temporal = temporal->right) {
-			half_edge* tmp_he = temporal->element;
-			
-			printf("(%f,%f) (%f,%f)\n", tmp_he->first->x, tmp_he->first->y,
-				   tmp_he->last->x, tmp_he->last->y);
-		}
-		/**Termino de imprimir estadisticas.**/
 		
 		/**
 		 * 2.3 Encolo las caras adyacentes a la interseccion que no se
@@ -1011,7 +784,6 @@ void upgrade_voronoi_diagram(up_data* data)
 	}
 }
 
-
 void write_voronoi(voronoi* voronoi, FILE* fp) {
 	list* seeds = voronoi->seeds;
 
@@ -1020,7 +792,8 @@ void write_voronoi(voronoi* voronoi, FILE* fp) {
 	item* tmp;
 	for(tmp = seeds->head; tmp != NULL; tmp = tmp->right) {
 		vertex* seed = tmp->element;
-		fprintf(fp,"%f %f\n", seed->x, seed->y);
+		fprintf(fp,"%f %f %s\n", seed->x, seed->y,
+				seed->distinct_color ? "Distinto\0" : "Normal\0");
 	}
 	
 	list* half_edges = voronoi->diagram->half_edge;
@@ -1037,7 +810,6 @@ voronoi* process_incremental(double width, double height, list* vertices)
 {
 	if (vertices == NULL)
 		return NULL;
-
 
 	FILE * fp;
 

@@ -81,8 +81,8 @@ module Test
         half_edge[:last][:x] == half_edge_copy[:last][:x] and
         half_edge[:last][:y] == half_edge_copy[:last][:y]
 
-      HalfEdge.destroy_half_edge_with_points(half_edge)
-      HalfEdge.destroy_half_edge_with_points(half_edge_copy)
+      HalfEdge.destroy_half_edge(half_edge)
+      HalfEdge.destroy_half_edge(half_edge_copy)
 
       result 
     end

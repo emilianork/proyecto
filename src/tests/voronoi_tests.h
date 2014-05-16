@@ -2,8 +2,10 @@
 #ifndef VORONOI_TESTS_H_
 #define VORONOI_TESTS_H_
 
-#define HEIGHT 400.0
-#define WIDTH  400.0
+#define HEIGHT 400
+#define WIDTH  400
+
+#define POINTS_SIZE 7
 
 #include "algorithms/algorithms.h"
 #include "dcel/dcel.h"

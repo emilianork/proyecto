@@ -15,14 +15,15 @@ def setup
 
   # Genera un conjunto random de puntos dentro de la caja.
 
-  rand_size = 4
+  rand_size = 7
   random_vertex = []
 
   rand_size.times.each do
     random_vertex << [rand(width).to_f, rand(height).to_f]
   end
 
-  random_vertex = [[271.0,398.0],[39.0,234.0],[107.0,177.0]]#,[180.0,158.0]]
+  random_vertex = [[236.0, 120.0], [39.0, 94.0], [300.0, 330.0], 
+                   [228.0,59.0], [302.0,6.0], [181.0,163.0], [104.0,257]]
 
   puts "Puntos"
   p random_vertex
@@ -77,7 +78,14 @@ def draw_vertex_and_half_edges
     
     vertices.each do
       |vertex|
+
+      if (vertex[2] == "Distinto") 
+        fill(127,0,0)
+      end
+
       ellipse(vertex[0], -vertex[1], 5.0,5.0)
+      
+      fill(255,255,255)
     end
 
     half_edges.each do
@@ -110,7 +118,7 @@ def read()
     size_vertex.times.each do
       line = f.gets.split
       
-      vertex = [line[0].to_f, line[1].to_f]
+      vertex = [line[0].to_f, line[1].to_f, line[2]]
       
       vertices << vertex
       

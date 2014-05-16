@@ -67,6 +67,7 @@ vertex* create_copy_point(vertex* point)
 void destroy_point(vertex* point)
 {
 	free(point);
+	point = NULL;
 }
 
 int curve_orientation(vertex* a, vertex* b, vertex* c)

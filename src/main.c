@@ -36,10 +36,12 @@ int main(void)
 
 	
 
-	vertex* A = init_point(271.0, 398.0, "\0");
-	vertex* B = init_point(39.0, 234.0,  "\0");
-	vertex* C = init_point(107.0, 177.0, "\0");
-	vertex* D = init_point(180.0,158.0,  "\0");
+	//[[247.0, 388.0], [259.0, 9.0], [338.0, 36.0],[214.0, 109.0]]
+
+	vertex* A = init_point(247.0, 388.0,  "\0");
+	vertex* B = init_point(259.0, 9.0,    "\0");
+	vertex* C = init_point(338.0, 36.0,   "\0");
+	vertex* D = init_point(214.0, 109.0,  "\0");
 						   
 	list* vertices = init_double_linked_list(POINT);
 	
