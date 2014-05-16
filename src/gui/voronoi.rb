@@ -22,19 +22,16 @@ def setup
     random_vertex << [rand(width).to_f, rand(height).to_f]
   end
 
-  random_vertex = [[236.0, 120.0], [39.0, 94.0], [300.0, 330.0], 
-                   [228.0,59.0], [302.0,6.0], [181.0,163.0], [104.0,257]]
-
   puts "Puntos"
   p random_vertex
   puts ""
 
   points = random_vertex.map do
-    |x| 
+    |x|
     Points.init_point(x[0], x[1], "")
   end
-  
-  
+
+
   list = List.init_double_linked_list(:point)
 
   points.each do
@@ -47,9 +44,9 @@ def setup
   read
 
   @index = 0
-  
+
   @up = false
- 
+
 end
 
 def draw
@@ -69,28 +66,28 @@ end
 #
 # Esta funcion la debes de modificar para que dibuje los puntos y aristas
 def draw_vertex_and_half_edges
-  
+
   if (@process[@index] != nil)
     background 255, 255, 255
-    
+
     vertices = @process[@index][:vertices]
     half_edges = @process[@index][:half_edges]
-    
+
     vertices.each do
       |vertex|
 
-      if (vertex[2] == "Distinto") 
+      if (vertex[2] == "Distinto")
         fill(127,0,0)
       end
 
       ellipse(vertex[0], -vertex[1], 5.0,5.0)
-      
+
       fill(255,255,255)
     end
 
     half_edges.each do
       |edge|
-      
+
       a = edge[0]
       b = edge[1]
 
@@ -111,35 +108,35 @@ def read()
   end
 
   while (not(f.eof?))
-    
+
     vertices = []
     size_vertex = f.gets.split.last.to_i
-    
+
     size_vertex.times.each do
       line = f.gets.split
-      
+
       vertex = [line[0].to_f, line[1].to_f, line[2]]
-      
+
       vertices << vertex
-      
+
     end
-    
+
     half_edges = []
     size_edges = f.gets.split.last.to_i
-    
+
     size_edges.times.each do
       line = f.gets.split
-      
+
       edge = [[line[0].to_f,line[1].to_f],[line[2].to_f, line[3].to_f]]
-      
+
       half_edges << edge
 
     end
 
     @process << {vertices: vertices, half_edges: half_edges}
 
-  end  
+  end
 
   f.close
-  
+
 end
