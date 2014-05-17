@@ -9,6 +9,9 @@
 #ifndef ALGORITHMS_H_
 #define ALGORITHMS_H_
 
+#define VORONOI_OUTPUT "voronoi.txt"
+#define DELAUNEY_OUTPUT "delauney.txt"
+
 #include "voronoi/voronoi.h"
 
 struct upgrade_data {
@@ -40,4 +43,6 @@ void voronoi_incremental(voronoi* voronoi, vertex* vertex);
 void upgrade_voronoi_diagram(up_data* data);
 
 voronoi* process_incremental(double width, double height, list* vertices);
+
+void process_delauney(voronoi* voronoi);
 #endif

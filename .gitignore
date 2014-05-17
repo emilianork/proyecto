@@ -23,4 +23,5 @@
 *.hex
 
 main
-src/salida.txt
+src/voronoi.txt
+src/delauney.txt

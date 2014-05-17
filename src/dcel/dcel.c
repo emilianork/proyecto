@@ -5,6 +5,7 @@
 
 #include "dcel/dcel.h"
 #include "double_linked_list/double_linked_list.h"
+#include "red_black_tree/rb_tree.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -279,7 +280,35 @@ list* incident_he_to_v(vertex* vertex)
 
 list* incident_f_to_f(face* face) 
 {
-	return NULL;
+	rb_tree* incident_faces;
+	incident_faces = init_rb_tree(FACE);
+	
+	if (face->outer_component != NULL) {
+
+		half_edge* init_half_edge = face->outer_component;
+		half_edge* tmp;
+
+		struct face* face_tmp = init_half_edge->twin->incident_face;
+		
+		if (face_tmp->outer_component != NULL)
+			rb_insert(incident_faces, face_tmp);
+		
+
+		for(tmp = init_half_edge->next; tmp != init_half_edge; tmp = tmp->next) {
+			
+			face_tmp = tmp->twin->incident_face;
+			
+			if (face_tmp->outer_component != NULL) { 
+				if (rb_search(incident_faces, face_tmp) == NULL)
+					rb_insert(incident_faces,face_tmp);
+			}
+		}
+	}
+
+	list* faces = rb_tree_to_list(incident_faces);
+	destroy_rb_tree(incident_faces);
+	
+	return faces;
 }
 
 list* incident_he_to_f(face* face)

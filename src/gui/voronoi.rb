@@ -39,11 +39,13 @@ def setup
     List.push_back(list, point)
   end
 
-  Algorithms.process_incremental(width, height, list)
+  voronoi = Algorithms.process_incremental(width, height, list)
+
+  Algorithms.process_delauney(voronoi)
 
   read
 
-  @index = 0
+  @index = -1
 
   @up = false
 
@@ -51,10 +53,25 @@ end
 
 def draw
   if key_pressed?
+    
     if @up
-      translate(0, height)
-      draw_vertex_and_half_edges
-      @index += 1
+      
+      if (key == "\n" or key == "\b")
+        
+        @index += 1 if (key == "\n" and (@index + 1) < @voronoi.size)
+        
+        @index -= 1  if (key == "\b" and @index >= 1)
+
+        
+        translate(0, height)
+        draw_voronoi
+      end
+      
+      if (key == " ")
+        translate(0, height)
+        draw_delauney
+      end
+      
       @up = false
     else
       @up = true
@@ -65,14 +82,14 @@ end
 # Public: Dibuja el conjunto de vertices y aristas @vertex y @half_edge
 #
 # Esta funcion la debes de modificar para que dibuje los puntos y aristas
-def draw_vertex_and_half_edges
-
-  if (@process[@index] != nil)
+def draw_voronoi
+  
+  if (@voronoi[@index] != nil)
     background 255, 255, 255
-
-    vertices = @process[@index][:vertices]
-    half_edges = @process[@index][:half_edges]
-
+    
+    vertices = @voronoi[@index][:vertices]
+    half_edges = @voronoi[@index][:half_edges]
+    
     vertices.each do
       |vertex|
 
@@ -96,16 +113,36 @@ def draw_vertex_and_half_edges
   end
 end
 
+def draw_delauney
+  
+  background 255, 255, 255
+  
+  vertices = @delauney[:vertices]
+  half_edges = @delauney[:half_edges]
+  
+  vertices.each do
+    |vertex|
+    
+    ellipse(vertex[0], -vertex[1], 5.0,5.0)
+    
+    fill(255,255,255)
+  end
+  
+  half_edges.each do
+    |edge|
+    
+    a = edge[0]
+    b = edge[1]
+    
+    line(a[0].abs,-a[1].abs,b[0].abs,-b[1].abs)
+  end  
+end
+
 
 def read()
 
-  @process = []
-  f = File.open("salida.txt", "r")
-
-  if (f.eof?)
-    puts "C todavía no termino de escribir el archivo"
-    exit(0)
-  end
+  @voronoi = []
+  f = File.open("voronoi.txt", "r")
 
   while (not(f.eof?))
 
@@ -133,10 +170,39 @@ def read()
 
     end
 
-    @process << {vertices: vertices, half_edges: half_edges}
+    @voronoi << {vertices: vertices, half_edges: half_edges}
 
   end
 
   f.close
 
+  f = File.open("delauney.txt", "r")
+  
+  vertices = []
+  
+  size_vertex = f.gets.split.last.to_i
+
+  size_vertex.times.each do
+    line = f.gets.split
+    
+    vertex = [line[0].to_f, line[1].to_f]
+    
+    vertices << vertex
+    
+  end
+  
+  half_edges = []
+  size_edges = f.gets.split.last.to_i
+  
+  size_edges.times.each do
+    line = f.gets.split
+    
+    edge = [[line[0].to_f,line[1].to_f],[line[2].to_f, line[3].to_f]]
+    
+    half_edges << edge
+    
+  end
+  
+  @delauney = {vertices: vertices, half_edges: half_edges}
+  
 end

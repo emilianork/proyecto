@@ -813,7 +813,7 @@ voronoi* process_incremental(double width, double height, list* vertices)
 
 	FILE * fp;
 
-	fp = fopen ("salida.txt", "w");
+	fp = fopen (VORONOI_OUTPUT, "w");
 	
 	voronoi* voronoi = init_voronoi_diagram(width, height);
 	
@@ -836,4 +836,57 @@ voronoi* process_incremental(double width, double height, list* vertices)
 	fclose(fp);
 
 	return voronoi;
+}
+
+void process_delauney(voronoi* voronoi)
+{
+	if (voronoi == NULL)
+		return;
+
+	FILE *fp;
+	fp = fopen(DELAUNEY_OUTPUT, "w");
+
+	list* seeds = voronoi->seeds;
+	fprintf(fp, "%s %d\n", "Semillas:", seeds->size);
+
+	item* tmp;
+	for(tmp = seeds->head; tmp != NULL; tmp = tmp->right) {
+		vertex* seed = tmp->element;
+		fprintf(fp, "%f %f\n", seed->x, seed->y);
+	}
+	
+	list* half_edges = init_double_linked_list(HALF_EDGE);
+
+	/**
+	 * Proceso el diagrama de delauney nada más obteniendo las aristas.
+	 */
+	for(tmp = seeds->head; tmp != NULL; tmp = tmp->right) {
+		vertex* seed = tmp->element;
+		face* face = seed->face;
+
+		list* faces = incident_f_to_f(face);
+
+		item* tmp1;
+		for(tmp1 = faces->head; tmp1 != NULL; tmp1 = tmp1->right) {
+			struct face* adyacent_face =  tmp1->element;
+			struct point* adyacent_seed = adyacent_face->center;
+
+			half_edge* tmp_he = init_half_edge(seed, adyacent_seed, "\0");
+			
+			push_back(half_edges, tmp_he);
+		}
+		
+	}
+		
+	fprintf(fp,"%s %d\n","Aristas:",half_edges->size);
+	
+	for(tmp = half_edges->head; tmp != NULL; tmp = tmp->right) {
+		half_edge* he = tmp->element;
+		fprintf(fp,"%f %f %f %f\n", he->first->x, he->first->y, he->last->x,
+				he->last->y);
+	}
+	
+	fclose(fp);
+	
+	return;
 }

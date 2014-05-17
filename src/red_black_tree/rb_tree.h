@@ -28,7 +28,7 @@ struct rb_node {
 	struct rb_node* left;
 	struct rb_node* right;
 	struct rb_node* parent;
-	
+
 	color color;	
 
 	void* element;
